@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -18,8 +19,8 @@ public class CoordinatePlane extends JFrame {
     List<String> edg = new ArrayList<>();
     private JButton uploadButton;
     private JFileChooser fileChooser;
-    private static final int WIDTH = 600;
-    private static final int HEIGHT = 600;
+    private static int WIDTH = 600;
+    private static int HEIGHT = 600;
     private static final int ORIGIN_X = WIDTH / 2;
     private static final int ORIGIN_Y = HEIGHT / 2;
     private static final int TICK_SIZE = 5;
@@ -33,6 +34,7 @@ public class CoordinatePlane extends JFrame {
 
     public CoordinatePlane() {
         setTitle("Coordinate Plane");
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -106,6 +108,7 @@ class NewDialog extends JDialog{
         setSize(600,600);
 
 
+
         this.xValues = xValues;
         this.yValues = yValues;
         this.edg = edg;
@@ -121,70 +124,50 @@ class NewDialog extends JDialog{
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                //System.out.println("Are we here");
 
-                //System.out.println("Current Dimensions values: Height: "+drawPanel.getHeight()+"Width: "+drawPanel.getWidth());
-
+/****************************************************************************/
+                //Dynamic Scaling Code
                 //Set width and height
                 newWidth = drawPanel.getWidth();
                 newHeight = drawPanel.getHeight();
-                //Find the Minimum of Width and Height of current window size to draw the co-ordinate plane and graph
-                int minOfWidthOrHeight = Math.min(drawPanel.getWidth(), drawPanel.getHeight());
-                System.out.println("Current Min value is: "+minOfWidthOrHeight);
-                g.drawLine(0, Math.round(minOfWidthOrHeight/2), minOfWidthOrHeight, Math.round(minOfWidthOrHeight/2));
-                g.drawLine(Math.round(minOfWidthOrHeight/2), 0, Math.round(minOfWidthOrHeight/2), minOfWidthOrHeight);
 
-                //Find pixel distance between each tick mark on the co-ordinate plane
-                int tickDistance = Math.round(minOfWidthOrHeight/2)/10;
+                int minOfWH = Math.min(newHeight, newWidth);
 
-                //draw tick marks on x-axis (positive values)
-                for(int i=0;i<10;i++){
-                    g.drawLine(Math.round(minOfWidthOrHeight/2)+tickDistance*i, Math.round(minOfWidthOrHeight/2)-5, Math.round(minOfWidthOrHeight/2)+tickDistance*i, Math.round(minOfWidthOrHeight/2)+5);
+                int W=minOfWH;
+                int H=minOfWH;
 
-                    g.drawString(String.valueOf(i), Math.round(minOfWidthOrHeight/2)+tickDistance*i, Math.round(minOfWidthOrHeight/2)+12);
+                int margin = 40;
 
-                }
+                int W1 = W-(2*margin);
+                int H1 = H-(2*margin);
 
-                //draw tick marks on x-axis (negative values)
-                for(int i=-1;i>-10;i--){
-                    g.drawLine(Math.round(minOfWidthOrHeight/2)+tickDistance*i, Math.round(minOfWidthOrHeight/2)-5, Math.round(minOfWidthOrHeight/2)+tickDistance*i, Math.round(minOfWidthOrHeight/2)+5);
-
-                    g.drawString(String.valueOf(i), Math.round(minOfWidthOrHeight/2)+tickDistance*i, Math.round(minOfWidthOrHeight/2)+12);
-
-                }
-
-                //draw tick marks on y-axis (positive values)
-                for(int i=0;i<10;i++){
-                    g.drawLine(Math.round(minOfWidthOrHeight/2)-5, Math.round(minOfWidthOrHeight/2)-(tickDistance*i), Math.round(minOfWidthOrHeight/2)+5, Math.round(minOfWidthOrHeight/2)-(tickDistance*i));
-                    if(i==0){
-                        continue;
-                    }
-                    g.drawString(String.valueOf(i), Math.round(minOfWidthOrHeight/2)-12, Math.round(minOfWidthOrHeight/2)-(tickDistance*i));
-                }
-
-                //draw tick marks on y-axis (negative values)
-                for(int i=-1;i>-10;i--){
-                    g.drawLine(Math.round(minOfWidthOrHeight/2)-5, Math.round(minOfWidthOrHeight/2)-(tickDistance*i), Math.round(minOfWidthOrHeight/2)+5, Math.round(minOfWidthOrHeight/2)-(tickDistance*i));
-
-                    g.drawString(String.valueOf(i), Math.round(minOfWidthOrHeight/2)-25, Math.round(minOfWidthOrHeight/2)-(tickDistance*i));
-                }
-
-                //System.out.println("After: "+g.getColor());
+                List<Integer> extremes = getExtremes();
+                //System.out.println("Extremes are: "+extremes);
+                int xMin = extremes.get(0);
+                int xMax = extremes.get(1);
+                int yMin = extremes.get(2);
+                int yMax = extremes.get(3);
 
                 //counter for edge label
                 int edgeCounter = 0;
 
                 //Draw edges
                 for(int i=0;i<edg.size();i++){
+                    //System.out.println("Edges arr size is: "+edg.size());
                     String[] edgArr = edg.get(i).split(" ");
                     int currV1 = Integer.parseInt(edgArr[1]);
                     int currV2 = Integer.parseInt(edgArr[2]);
-                    System.out.println("Edge drawn from: "+edgArr[1]+" to "+edgArr[2]);
-                    int x1 = xValues.get(currV1)*tickDistance+Math.round(minOfWidthOrHeight/2);
-                    int y1 = Math.round(minOfWidthOrHeight/2)-yValues.get(currV1)*tickDistance;
-                    int x2 = xValues.get(currV2)*tickDistance+Math.round(minOfWidthOrHeight/2);
-                    int y2 = Math.round(minOfWidthOrHeight/2)-yValues.get(currV2)*tickDistance;
-                    g.drawLine(xValues.get(currV1)*tickDistance+Math.round(minOfWidthOrHeight/2),Math.round(minOfWidthOrHeight/2)-yValues.get(currV1)*tickDistance, xValues.get(currV2)*tickDistance+Math.round(minOfWidthOrHeight/2), Math.round(minOfWidthOrHeight/2)-yValues.get(currV2)*tickDistance);
+                    //System.out.println("Edge drawn from: "+edgArr[1]+" to "+edgArr[2]);
+                    int x1 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV1)-xMin))/(xMax-xMin)));
+
+
+                    int y1 = (int)Math.round(margin + (double)((H1 * (yMax-yValues.get(currV1)))/(yMax-yMin)));
+                    //System.out.println("Value of this: "+(double)2*(2/6));
+
+                    int x2 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV2)-xMin))/(xMax-xMin)));
+                    int y2 = (int)Math.round(margin + (double)((H1 * (yMax-yValues.get(currV2)))/(yMax-yMin)));
+                    //System.out.println("X1:"+x1+";y1:"+y1+";x2:"+x2+";y2:"+y2);
+                    g.drawLine(x1, y1, x2, y2);
 
                     //Find slope of the line by using above two points on the line
                     //double slope = (y2-y1)/(x2-x1);
@@ -203,35 +186,109 @@ class NewDialog extends JDialog{
                     double vX = -deltaY/n;
                     double vY = -deltaX/n;
 
-                    int x3 = (int)Math.round(xMid + (10*vX));
-                    int y3 = (int)Math.round(yMid + (10*vY));
+                    int x3 = (int)Math.round(xMid + (20*vX));
+                    int y3 = (int)Math.round(yMid + (20*vY));
 
                     //label the edge
                     g.drawString(Character.toString(97+edgeCounter), x3, y3);
                     edgeCounter++;
 
                 }
-
-                System.out.println("Current Font: "+g.getFont());
-                System.out.println("Current FontMetrics: "+g.getFontMetrics());
-
                 //Label vertices
-                for(int i=0;i<xValues.size();i++){
-                    g.drawOval(xValues.get(i)*tickDistance+Math.round(minOfWidthOrHeight/2)-(10), Math.round(minOfWidthOrHeight/2)-(tickDistance*yValues.get(i))-(10), 20*(int)Math.sqrt(2), 20*(int)Math.sqrt(2));
+                List<List<Integer>> lt = getPixelValues(xValues, yValues, minOfWH);
+
+                int labelCounter=0;
+
+                for(List<Integer> curr:lt){
+                    int x=curr.get(0);
+                    int y=curr.get(1);
+                    g.setColor(Color.WHITE);
+                    g.fillOval(x-(10), y-(10), 20*(int)Math.sqrt(2), 20*(int)Math.sqrt(2));
+                    g.setColor(Color.BLACK);
+                    g.drawOval(x-(10), y-(10), 20*(int)Math.sqrt(2), 20*(int)Math.sqrt(2));
+
                     g.setColor(Color.RED);
                     g.setFont(f1);
-                    g.drawString(String.valueOf(i), Math.round(minOfWidthOrHeight/2)+tickDistance*xValues.get(i)-2, Math.round(minOfWidthOrHeight/2)-(tickDistance*yValues.get(i))+3);
+                    g.drawString(String.valueOf(labelCounter), x-2, y+3);
+                    labelCounter++;
                     g.setFont(null);
                     g.setColor(Color.BLACK);
+
                 }
-
-
-
             }
         };
         drawPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        drawPanel.setBackground(Color.WHITE);
         add(drawPanel);
         setVisible(true);
         pack();
+    }
+
+
+    //Find xMin, xMax, yMin, yMax
+    public List<Integer> getExtremes(){
+        List<Integer> lt = new ArrayList<>();
+
+        //Find extremes in x values
+        int xMin = Integer.MAX_VALUE;
+        int xMax = Integer.MIN_VALUE;
+
+        for(int curr:xValues){
+            if(curr<xMin){
+                xMin=curr;
+            }
+            if(curr>xMax){
+                xMax=curr;
+            }
+        }
+        lt.add(xMin);
+        lt.add(xMax);
+
+        //Find extremes in y values
+        int yMin = Integer.MAX_VALUE;
+        int yMax = Integer.MIN_VALUE;
+
+        for(int curr:yValues){
+            if(curr<yMin){
+                yMin=curr;
+            }
+            if(curr>yMax){
+                yMax=curr;
+            }
+        }
+        lt.add(yMin);
+        lt.add(yMax);
+
+        return lt;
+
+    }
+
+    public List<List<Integer>> getPixelValues(List<Integer> xValues, List<Integer> yValues, int minOfWH){
+        List<List<Integer>> lt = new ArrayList<>();
+
+        int W=minOfWH;
+        int H=minOfWH;
+
+        int margin = 40;
+
+        int W1 = W-(2*margin);
+        int H1 = H-(2*margin);
+
+        List<Integer> extremes = getExtremes();
+        //System.out.println("Extremes are: "+extremes);
+        int xMin = extremes.get(0);
+        int xMax = extremes.get(1);
+        int yMin = extremes.get(2);
+        int yMax = extremes.get(3);
+
+        for(int i=0;i<xValues.size();i++){
+            int x = (int)Math.round(margin +  (double)((W1 * (xValues.get(i)-xMin))/(xMax-xMin)));
+            int y = (int)Math.round(margin + (double)((H1 * (yMax-yValues.get(i)))/(yMax-yMin)));
+            lt.add(new ArrayList<>());
+            lt.get(i).add(x);
+            lt.get(i).add(y);
+        }
+
+        return lt;
     }
 }
