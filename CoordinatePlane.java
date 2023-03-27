@@ -125,7 +125,7 @@ class NewDialog extends JDialog{
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
-/****************************************************************************/
+            /***************************************************************/
                 //Dynamic Scaling Code
                 //Set width and height
                 newWidth = drawPanel.getWidth();
@@ -142,7 +142,7 @@ class NewDialog extends JDialog{
                 int H1 = H-(2*margin);
 
                 List<Integer> extremes = getExtremes();
-                //System.out.println("Extremes are: "+extremes);
+
                 int xMin = extremes.get(0);
                 int xMax = extremes.get(1);
                 int yMin = extremes.get(2);
@@ -162,38 +162,63 @@ class NewDialog extends JDialog{
 
 
                     int y1 = (int)Math.round(margin + (double)((H1 * (yMax-yValues.get(currV1)))/(yMax-yMin)));
-                    //System.out.println("Value of this: "+(double)2*(2/6));
+
 
                     int x2 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV2)-xMin))/(xMax-xMin)));
                     int y2 = (int)Math.round(margin + (double)((H1 * (yMax-yValues.get(currV2)))/(yMax-yMin)));
-                    //System.out.println("X1:"+x1+";y1:"+y1+";x2:"+x2+";y2:"+y2);
+
                     g.drawLine(x1, y1, x2, y2);
 
-                    //Find slope of the line by using above two points on the line
-                    //double slope = (y2-y1)/(x2-x1);
-
-//                    int x3 = (int)((x1+x2)/2+(8/(Math.sqrt(Math.pow((y1-y2), 2)+Math.pow((x2-x1), 2))))*(y1-y2));
-//                    int y3 = (int)((y1+y2)/2+(8/(Math.sqrt(Math.pow((y1-y2), 2)+Math.pow((x2-x1), 2))))*(x2-x1));
-
-                    double xMid = (x1+x2)/2;
-                    double yMid = (y1+y2)/2;
+                    int xMid = (int)Math.round((double)(x1+x2)/2);
+                    int yMid = (int)Math.round((double)(y1+y2)/2);
 
                     int deltaX = Math.abs(x2-x1);
                     int deltaY = Math.abs(y2-y1);
 
                     double n = Math.sqrt(Math.pow(deltaX, 2)+Math.pow(deltaY, 2));
+                    System.out.println("n value: "+ n);
 
-                    double vX = -deltaY/n;
-                    double vY = -deltaX/n;
+                    //Below code is to make sure all edge labels are drawn perpendicular
+                    //to their edges
+                    int dummyX1 = xValues.get(currV1);
+                    int dummyY1 = yValues.get(currV1);
+                    int dummyX2 = xValues.get(currV2);
+                    int dummyY2 = yValues.get(currV2);
 
-                    int x3 = (int)Math.round(xMid + (20*vX));
-                    int y3 = (int)Math.round(yMid + (20*vY));
+                    //move one vertex to (0,0) coordinate and find the angle of the
+                    //other vertex using atan2 function
+                    int newX = (dummyX1+(-dummyX2));
+                    int newY = (dummyY1+(-dummyY2));
+                    int sign=0;
+                    double angle = Math.toDegrees(Math.atan2(newY, newX));
+                    //if angle is obtuse then flip the sign of vX and vY values
+                    if((angle>90 && angle <180) || (angle<0 && angle>-90)){
+                        sign=1;
+                    }
+                    double vX=0;
+                    double vY=0;
+
+                    if(sign==0){
+                        vX = -(double)(deltaY/n);
+                        vY = -(double)(deltaX/n);
+                    }
+                    else{
+                        vX = (double)(deltaY/n);
+                        vY = -(double)(deltaX/n);
+                    }
+
+
+                    int x3 = (int)Math.round(xMid + (30*vX));
+                    int y3 = (int)Math.round(yMid + (30*vY));
+
 
                     //label the edge
                     g.drawString(Character.toString(97+edgeCounter), x3, y3);
+                    //g.drawLine(xMid, yMid, x3, y3);
                     edgeCounter++;
 
                 }
+
                 //Label vertices
                 List<List<Integer>> lt = getPixelValues(xValues, yValues, minOfWH);
 
@@ -263,6 +288,7 @@ class NewDialog extends JDialog{
 
     }
 
+    //Get pixel values for the given vertices as coordinates
     public List<List<Integer>> getPixelValues(List<Integer> xValues, List<Integer> yValues, int minOfWH){
         List<List<Integer>> lt = new ArrayList<>();
 
