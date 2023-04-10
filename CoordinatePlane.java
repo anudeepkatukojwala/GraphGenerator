@@ -58,13 +58,14 @@ public class CoordinatePlane extends JFrame {
                             if(currArr[0].equals("v")){
                                 xValues.add(Integer.parseInt(currArr[1]));
                                 yValues.add(Integer.parseInt(currArr[2]));
+
                             }
                             else{
                                 edg.add(line);
                             }
                         }
-                        System.out.println("xValues are: "+xValues);
-                        System.out.println("yValues are: "+yValues);
+                        //System.out.println("xValues are: "+xValues);
+                        //System.out.println("yValues are: "+yValues);
                         System.out.println("Edges are: "+edg);
                         reader.close();
                         new NewDialog(CoordinatePlane.this, xValues, yValues, edg);
@@ -176,7 +177,7 @@ class NewDialog extends JDialog{
                     int deltaY = Math.abs(y2-y1);
 
                     double n = Math.sqrt(Math.pow(deltaX, 2)+Math.pow(deltaY, 2));
-                    System.out.println("n value: "+ n);
+                    //System.out.println("n value: "+ n);
 
                     //Below code is to make sure all edge labels are drawn perpendicular
                     //to their edges
@@ -208,8 +209,8 @@ class NewDialog extends JDialog{
                     }
 
 
-                    int x3 = (int)Math.round(xMid + (30*vX));
-                    int y3 = (int)Math.round(yMid + (30*vY));
+                    int x3 = (int)Math.round(xMid + (15*vX));
+                    int y3 = (int)Math.round(yMid + (15*vY));
 
 
                     //label the edge
@@ -232,16 +233,23 @@ class NewDialog extends JDialog{
                     g.setColor(Color.BLACK);
                     g.drawOval(x-(10), y-(10), 20*(int)Math.sqrt(2), 20*(int)Math.sqrt(2));
 
-                    g.setColor(Color.RED);
+                    //g.setColor(Color.RED);
                     g.setFont(f1);
                     g.drawString(String.valueOf(labelCounter), x-2, y+3);
                     labelCounter++;
                     g.setFont(null);
-                    g.setColor(Color.BLACK);
+                    //g.setColor(Color.BLACK);
 
                 }
             }
         };
+        //System.out.println("Adjacency List: "+getAdjacencyListOfGraph(xValues, yValues, edg));
+        GraphOperations obj = new GraphOperations(xValues, yValues, edg);
+        //obj.getAdjacencyListOfGraph();
+        obj.getObjectsOfAdjacencyList();
+        obj.getRegions();
+        //obj.getRotationSystem();
+        //System.out.println("Regions are: "+obj.getRegions());
         drawPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         drawPanel.setBackground(Color.WHITE);
         add(drawPanel);
@@ -317,4 +325,8 @@ class NewDialog extends JDialog{
 
         return lt;
     }
+
+
+
+
 }
