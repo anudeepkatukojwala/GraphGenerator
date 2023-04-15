@@ -121,6 +121,16 @@ class NewDialog extends JDialog{
     public void createGUI(){
 
         Font f1 = new Font(Font.SERIF, Font.BOLD,  10);
+
+        GraphOperations newObj = new GraphOperations(xValues, yValues, edg);
+        PreGraphDrawingOperations tempObj = new PreGraphDrawingOperations(xValues, yValues, edg);
+        boolean shouldWeContinue = tempObj.checkIfAnyThreePointsAreCollinear(newObj.vertexAngleMapping, newObj.getRotationSystem());
+        System.out.println("Return of checkIfAnyThreePointsAreCollinear: "+shouldWeContinue);
+        if(!shouldWeContinue){
+            System.out.println("Coordinates are collinear");
+            return;
+        }
+
         drawPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {

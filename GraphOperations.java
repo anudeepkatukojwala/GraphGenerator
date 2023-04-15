@@ -8,6 +8,7 @@ public class GraphOperations {
     List<Integer> oneRegionVertices;
 
     List<Integer> sizeOfAdjList;
+    List<HashMap<Integer, Integer>> vertexAngleMapping;
 
     List<List<Integer>> regions;
 
@@ -16,6 +17,7 @@ public class GraphOperations {
         this.yValues = yValues;
         this.edges = edges;
         this.oneRegionVertices = new ArrayList<>();
+        this.vertexAngleMapping = new ArrayList<>();
     }
 
     //Code for finding Rotation System for each vertex in the graph
@@ -32,6 +34,7 @@ public class GraphOperations {
         for(int i=0;i<adjacencyList.size();i++){
             //Clear the angleVertexMap values for this iteration
             angleVertexMap.clear();
+            vertexAngleMapping.add(new HashMap<>());
             //get the co-ordinates of the vertex for which we are currently
             //finding the rotation system
             int originX = xValues.get(i);
@@ -57,18 +60,40 @@ public class GraphOperations {
                 //add the angle, vertex mapping to the TreeMap
                 //TreeMap allows us to order the adjacent vertices in counter-clockwise order
                 //with angle 0 being the start point of counter-clockwise ordering
-                angleVertexMap.put(temp, curr);
+                //Try saving vertex to angle mapping to avoid loss of information
+
+                //angleVertexMap.put(temp, curr);
+                vertexAngleMapping.get(i).put(curr, temp);
             }
 
+//            vertexAngleMapping.add(new HashMap<>());
             //Add the vertices to the rotationSystem in the counter-clockwise order
-            for(int currKey:angleVertexMap.keySet()){
-                rotationSystem.get(i).add(angleVertexMap.get(currKey));
+//            for(int currKey:angleVertexMap.keySet()){
+//                //Add vertex and angle as pair to a list of hashmap
+////                vertexAngleMapping.get(i).put(angleVertexMap.get(currKey), currKey);
+//                rotationSystem.get(i).add(angleVertexMap.get(currKey));
+//            }
+
+            //writing new code to order the vertices in the counter clockwise direction
+            HashMap<Integer, Integer> temp = new HashMap<>(vertexAngleMapping.get(i));
+            while(!temp.isEmpty()){
+                int min = Integer.MAX_VALUE;
+                int minKey = Integer.MAX_VALUE;
+                for(int currKey:temp.keySet()){
+                    if(temp.get(currKey)<min){
+                        min = temp.get(currKey);
+                        minKey = currKey;
+                    }
+                }
+                rotationSystem.get(i).add(minKey);
+                temp.remove(minKey);
             }
 
 
 
         }
         System.out.println("\nRotation System is: "+rotationSystem);
+        System.out.println("VertexAngle mappings are: "+vertexAngleMapping);
 
         sizeOfAdjList = new ArrayList<>();
         for(List<Integer> curr:rotationSystem){
@@ -126,7 +151,7 @@ public class GraphOperations {
                     if(temp.visited==true){
 
                         regions.add(new ArrayList<>(oneRegionVertices));
-                        System.out.println("Curr Region vertices: "+regions);
+                        //System.out.println("Curr Region vertices: "+regions);
                         oneRegionVertices.clear();
                         Node now = getNextVertex(rotationSystem, curr, parent);
                         if(now==null){
