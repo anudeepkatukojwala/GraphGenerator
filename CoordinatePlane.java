@@ -131,6 +131,12 @@ class NewDialog extends JDialog{
             return;
         }
 
+        boolean doEdgesCross = tempObj.checkIfAnyEdgesAreCrossingEachOther();
+        if(doEdgesCross){
+            System.out.println("Edges cross. Change the input");
+            return;
+        }
+
         drawPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
