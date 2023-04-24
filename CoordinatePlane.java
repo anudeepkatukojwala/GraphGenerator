@@ -260,10 +260,10 @@ class NewDialog extends JDialog{
             }
         };
         //System.out.println("Adjacency List: "+getAdjacencyListOfGraph(xValues, yValues, edg));
-        GraphOperations obj = new GraphOperations(xValues, yValues, edg);
-        //obj.getAdjacencyListOfGraph();
-        obj.getObjectsOfAdjacencyList();
-        obj.getRegions();
+//        GraphOperations obj = new GraphOperations(xValues, yValues, edg);
+//        //obj.getAdjacencyListOfGraph();
+//        obj.getObjectsOfAdjacencyList();
+//        obj.getRegions();
         //obj.getRotationSystem();
         //System.out.println("Regions are: "+obj.getRegions());
         drawPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
