@@ -72,14 +72,17 @@ public class PreGraphDrawingOperations {
         double t1 = solution.getEntry(0);
         double t2 = solution.getEntry(1);
         System.out.println(solution.getEntry(0)+" "+solution.getEntry(1));
-        if((t1>=0 && t1<=1) || (t2>=0 && t2<=1)){
-            return true;
+        if((t1>=0 && t1<=1) && (t2>=0 && t2<=1)){
+            return false;
         }
         else{
             return false;
         }
 
     }
+
+
+
 
 
 
