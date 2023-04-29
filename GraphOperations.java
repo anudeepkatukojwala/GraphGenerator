@@ -1,18 +1,18 @@
 import java.util.*;
 public class GraphOperations {
 
-    List<Integer> xValues;
-    List<Integer> yValues;
+    List<Double> xValues;
+    List<Double> yValues;
     List<String> edges;
 
     List<Integer> oneRegionVertices;
 
     List<Integer> sizeOfAdjList;
-    List<HashMap<Integer, Integer>> vertexAngleMapping;
+    List<HashMap<Integer, Double>> vertexAngleMapping;
 
     List<List<Integer>> regions;
 
-    public GraphOperations(List<Integer> xValues, List<Integer> yValues, List<String> edges){
+    public GraphOperations(List<Double> xValues, List<Double> yValues, List<String> edges){
         this.xValues = xValues;
         this.yValues = yValues;
         this.edges = edges;
@@ -37,19 +37,19 @@ public class GraphOperations {
             vertexAngleMapping.add(new HashMap<>());
             //get the co-ordinates of the vertex for which we are currently
             //finding the rotation system
-            int originX = xValues.get(i);
-            int originY = yValues.get(i);
+            double originX = xValues.get(i);
+            double originY = yValues.get(i);
             //for each vertex that is adjacent to our current vertex for which
             //we are finding the rotation system do the following
             for(int curr:adjacencyList.get(i)){
-                int x=xValues.get(curr);
-                int y=yValues.get(curr);
+                double x=xValues.get(curr);
+                double y=yValues.get(curr);
                 //find new vector (or new co-ordinates for each adjacent vertex)
                 //by subtracting our origin vertex co-ordinates
-                int newX = x-originX;
-                int newY = y-originY;
+                double newX = x-originX;
+                double newY = y-originY;
                 //find the angle of curr adjacent vertex using atan2
-                int temp = (int)Math.toDegrees(Math.atan2(newY, newX));
+                double temp = Math.toDegrees(Math.atan2(newY, newX));
                 //if the angle is negative it means our adjacent vertex is in quadrant 3 and 4
                 //after moving the vector to origin
                 //In that case add 180 to the angle to make it a positive value
@@ -75,9 +75,9 @@ public class GraphOperations {
 //            }
 
             //writing new code to order the vertices in the counter clockwise direction
-            HashMap<Integer, Integer> temp = new HashMap<>(vertexAngleMapping.get(i));
+            HashMap<Integer, Double> temp = new HashMap<>(vertexAngleMapping.get(i));
             while(!temp.isEmpty()){
-                int min = Integer.MAX_VALUE;
+                double min = Double.MAX_VALUE;
                 int minKey = Integer.MAX_VALUE;
                 for(int currKey:temp.keySet()){
                     if(temp.get(currKey)<min){
@@ -142,6 +142,7 @@ public class GraphOperations {
         if(parent==Integer.MIN_VALUE){
             Node temp = currList.get(0);
             oneRegionVertices.add(temp.val);
+            System.out.println("Curr: "+temp.val);
             temp.visited = true;
             dfs(regions, rotationSystem, visited, temp.val, curr);
         }
@@ -165,6 +166,7 @@ public class GraphOperations {
                         }
                     }
                     else{
+                        System.out.println("Curr: "+temp.val);
                         oneRegionVertices.add(temp.val);
                         temp.visited = true;
                         dfs(regions, rotationSystem, visited, temp.val, curr);
@@ -204,7 +206,7 @@ public class GraphOperations {
         while(size+1!=iterator){
             if(!tempList.get((parentIndex+iterator)%size).visited){
                 didWeFindNonVisitedVertex=1;
-                return tempList.get(parentIndex+iterator%size);
+                return tempList.get((parentIndex+iterator)%size);
             }
             iterator++;
         }

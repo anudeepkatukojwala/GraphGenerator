@@ -20,7 +20,7 @@ public class TutteEmbedding {
     }
 
     public void selectRegion(){
-        selectedRegion = regions.get(0);
+        selectedRegion = regions.get(1);
 
     }
 

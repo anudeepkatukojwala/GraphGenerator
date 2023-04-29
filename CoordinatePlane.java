@@ -11,26 +11,13 @@ import javax.swing.*;
 
 public class CoordinatePlane extends JFrame {
 
-    List<Integer> xValues = new ArrayList<>();
-    List<Integer> yValues =  new ArrayList<>();
-
-    Queue<Map<Integer, Integer>> edges = new ArrayDeque<>();
-
+    List<Double> xValues = new ArrayList<>();
+    List<Double> yValues =  new ArrayList<>();
     List<String> edg = new ArrayList<>();
     private JButton uploadButton;
     private JFileChooser fileChooser;
     private static int WIDTH = 600;
     private static int HEIGHT = 600;
-    private static final int ORIGIN_X = WIDTH / 2;
-    private static final int ORIGIN_Y = HEIGHT / 2;
-    private static final int TICK_SIZE = 5;
-    private static final int TICK_INTERVAL = 20;
-    private static final int AXIS_WIDTH = 2;
-
-    private JPanel planePanel;
-
-    private JDialog ndialog;
-
 
     public CoordinatePlane() {
         setTitle("Coordinate Plane");
@@ -56,9 +43,8 @@ public class CoordinatePlane extends JFrame {
                         while ((line = reader.readLine()) != null) {
                             String[] currArr = line.split(" ");
                             if(currArr[0].equals("v")){
-                                xValues.add(Integer.parseInt(currArr[1]));
-                                yValues.add(Integer.parseInt(currArr[2]));
-
+                                xValues.add(Double.parseDouble(currArr[1]));
+                                yValues.add(Double.parseDouble(currArr[2]));
                             }
                             else{
                                 edg.add(line);
@@ -68,6 +54,32 @@ public class CoordinatePlane extends JFrame {
                         //System.out.println("yValues are: "+yValues);
                         System.out.println("Edges are: "+edg);
                         reader.close();
+                        GraphOperations newObj = new GraphOperations(xValues, yValues, edg);
+                        PreGraphDrawingOperations tempObj = new PreGraphDrawingOperations(xValues, yValues, edg);
+                        boolean shouldWeContinue = tempObj.checkIfAnyThreePointsAreCollinear(newObj.vertexAngleMapping, newObj.getRotationSystem());
+                        System.out.println("Return of checkIfAnyThreePointsAreCollinear: "+shouldWeContinue);
+                        if(!shouldWeContinue){
+                            System.out.println("Coordinates are collinear");
+                            return;
+                        }
+                        System.out.println(newObj.getRegions());
+
+//                        boolean doEdgesCross = tempObj.checkIfAnyEdgesAreCrossingEachOther();
+//                        if(doEdgesCross){
+//                            System.out.println("Edges cross. Change the input");
+//                            return;
+//                        }
+
+
+                        /****************************************************/
+                        //Change the co-ordinates for Tutte Embedding here
+                        //GraphOperations obj = new GraphOperations(xValues, yValues, edg);
+                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, newObj.getRegions(), newObj.getRotationSystem());
+                        List<List<Double>> newCoordinates = tutteObj.calculateNewVertexPositions();
+                        xValues = newCoordinates.get(0);
+                        yValues = newCoordinates.get(1);
+                        /****************************************************/
+
                         new NewDialog(CoordinatePlane.this, xValues, yValues, edg);
 
                     } catch (IOException ex) {
@@ -96,46 +108,24 @@ class NewDialog extends JDialog{
     private int newWidth = 600;
     private int newHeight = 600;
 
-    List<Integer> xValues = new ArrayList<>();
-    List<Integer> yValues =  new ArrayList<>();
-
-    Queue<Map<Integer, Integer>> edges = new ArrayDeque<>();
-
+    List<Double> xValues;
+    List<Double> yValues;
     List<String> edg = new ArrayList<>();
 
-    public NewDialog(JFrame parent, List<Integer> xValues, List<Integer> yValues, List<String> edg) {
+    public NewDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<String> edg) {
         super(parent, "Graph", true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(600,600);
-
-
-
         this.xValues = xValues;
         this.yValues = yValues;
         this.edg = edg;
         createGUI();
-
-
     }
 
     public void createGUI(){
 
         Font f1 = new Font(Font.SERIF, Font.BOLD,  10);
 
-        GraphOperations newObj = new GraphOperations(xValues, yValues, edg);
-        PreGraphDrawingOperations tempObj = new PreGraphDrawingOperations(xValues, yValues, edg);
-        boolean shouldWeContinue = tempObj.checkIfAnyThreePointsAreCollinear(newObj.vertexAngleMapping, newObj.getRotationSystem());
-        System.out.println("Return of checkIfAnyThreePointsAreCollinear: "+shouldWeContinue);
-        if(!shouldWeContinue){
-            System.out.println("Coordinates are collinear");
-            return;
-        }
-
-        boolean doEdgesCross = tempObj.checkIfAnyEdgesAreCrossingEachOther();
-        if(doEdgesCross){
-            System.out.println("Edges cross. Change the input");
-            return;
-        }
 
         drawPanel = new JPanel() {
             @Override
@@ -158,12 +148,12 @@ class NewDialog extends JDialog{
                 int W1 = W-(2*margin);
                 int H1 = H-(2*margin);
 
-                List<Integer> extremes = getExtremes();
+                List<Double> extremes = getExtremes();
 
-                int xMin = extremes.get(0);
-                int xMax = extremes.get(1);
-                int yMin = extremes.get(2);
-                int yMax = extremes.get(3);
+                double xMin = extremes.get(0);
+                double xMax = extremes.get(1);
+                double yMin = extremes.get(2);
+                double yMax = extremes.get(3);
 
                 //counter for edge label
                 int edgeCounter = 0;
@@ -197,15 +187,15 @@ class NewDialog extends JDialog{
 
                     //Below code is to make sure all edge labels are drawn perpendicular
                     //to their edges
-                    int dummyX1 = xValues.get(currV1);
-                    int dummyY1 = yValues.get(currV1);
-                    int dummyX2 = xValues.get(currV2);
-                    int dummyY2 = yValues.get(currV2);
+                    double dummyX1 = xValues.get(currV1);
+                    double dummyY1 = yValues.get(currV1);
+                    double dummyX2 = xValues.get(currV2);
+                    double dummyY2 = yValues.get(currV2);
 
                     //move one vertex to (0,0) coordinate and find the angle of the
                     //other vertex using atan2 function
-                    int newX = (dummyX1+(-dummyX2));
-                    int newY = (dummyY1+(-dummyY2));
+                    double newX = (dummyX1+(-dummyX2));
+                    double newY = (dummyY1+(-dummyY2));
                     int sign=0;
                     double angle = Math.toDegrees(Math.atan2(newY, newX));
                     //if angle is obtuse then flip the sign of vX and vY values
@@ -275,14 +265,14 @@ class NewDialog extends JDialog{
 
 
     //Find xMin, xMax, yMin, yMax
-    public List<Integer> getExtremes(){
-        List<Integer> lt = new ArrayList<>();
+    public List<Double> getExtremes(){
+        List<Double> lt = new ArrayList<>();
 
         //Find extremes in x values
-        int xMin = Integer.MAX_VALUE;
-        int xMax = Integer.MIN_VALUE;
+        double xMin = Double.MAX_VALUE;
+        double xMax = Double.MIN_VALUE;
 
-        for(int curr:xValues){
+        for(double curr:xValues){
             if(curr<xMin){
                 xMin=curr;
             }
@@ -294,10 +284,10 @@ class NewDialog extends JDialog{
         lt.add(xMax);
 
         //Find extremes in y values
-        int yMin = Integer.MAX_VALUE;
-        int yMax = Integer.MIN_VALUE;
+        double yMin = Double.MAX_VALUE;
+        double yMax = Double.MIN_VALUE;
 
-        for(int curr:yValues){
+        for(double curr:yValues){
             if(curr<yMin){
                 yMin=curr;
             }
@@ -313,7 +303,7 @@ class NewDialog extends JDialog{
     }
 
     //Get pixel values for the given vertices as coordinates
-    public List<List<Integer>> getPixelValues(List<Integer> xValues, List<Integer> yValues, int minOfWH){
+    public List<List<Integer>> getPixelValues(List<Double> xValues, List<Double> yValues, int minOfWH){
         List<List<Integer>> lt = new ArrayList<>();
 
         int W=minOfWH;
@@ -324,12 +314,12 @@ class NewDialog extends JDialog{
         int W1 = W-(2*margin);
         int H1 = H-(2*margin);
 
-        List<Integer> extremes = getExtremes();
+        List<Double> extremes = getExtremes();
         //System.out.println("Extremes are: "+extremes);
-        int xMin = extremes.get(0);
-        int xMax = extremes.get(1);
-        int yMin = extremes.get(2);
-        int yMax = extremes.get(3);
+        double xMin = extremes.get(0);
+        double xMax = extremes.get(1);
+        double yMin = extremes.get(2);
+        double yMax = extremes.get(3);
 
         for(int i=0;i<xValues.size();i++){
             int x = (int)Math.round(margin +  (double)((W1 * (xValues.get(i)-xMin))/(xMax-xMin)));
