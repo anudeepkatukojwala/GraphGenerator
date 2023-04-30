@@ -83,9 +83,193 @@ public class PreGraphDrawingOperations {
 
     }
 
+    //To check if two edges that do not share the endpoint are parallel are not using the angle test
+    public boolean checkIfTwoEdgesAreParallel(String[] edge1, String[] edge2){
+        //Move the edge1 to the origin with one vertex as origin
+        double originX1 = xValues.get(Integer.parseInt(edge1[1]));
+        double originY1 = yValues.get(Integer.parseInt(edge1[1]));
+
+        //Vertex using which we find the angle
+        double x1 = xValues.get(Integer.parseInt(edge1[2]));
+        double y1 = yValues.get(Integer.parseInt(edge1[2]));
+
+        double newX1 = x1-originX1;
+        double newY1 = y1-originY1;
+
+        double angle1 = Math.toDegrees(Math.atan2(newY1, newX1));
+
+        //if the angle is negative it means our edge1[2] vertex is in quadrant 3 and 4
+        //after moving the vector to origin
+        //In that case add 180 to the angle to make it a positive value
+        if(angle1<0){
+            angle1+=360;
+        }
+
+        //Move the edge2 to the origin with one vertex as origin
+        double originX2 = xValues.get(Integer.parseInt(edge2[1]));
+        double originY2 = yValues.get(Integer.parseInt(edge2[1]));
+
+        //Vertex using which we find the angle
+        double x2 = xValues.get(Integer.parseInt(edge2[2]));
+        double y2 = yValues.get(Integer.parseInt(edge2[2]));
+
+        double newX2 = x2-originX2;
+        double newY2 = y2-originY2;
+
+        double angle2 = Math.toDegrees(Math.atan2(newY2, newX2));
+
+        //if the angle is negative it means our edge2[2] vertex is in quadrant 3 and 4
+        //after moving the vector to origin
+        //In that case add 180 to the angle to make it a positive value
+        if(angle2<0){
+            angle2+=360;
+        }
+
+
+        if(angle1==angle2){
+            return true;
+        }
+        else{
+            return false;
+        }
+
+    }
+
+
+    //To check if two edges that do not share a common endpoint lie on the same line
+    public boolean checkIfTwoEdgesAreOnSameLine(String[] edge1, String[] edge2){
+        //vertex 1 of edge1
+        double edge1X1 = xValues.get(Integer.parseInt(edge1[1]));
+        double edge1Y1 = yValues.get(Integer.parseInt(edge1[1]));
+
+        //vertex 2 of edge1
+        double edge1X2 = xValues.get(Integer.parseInt(edge1[2]));
+        double edge1Y2 = yValues.get(Integer.parseInt(edge1[2]));
+
+        //vertex 1 of edge2
+        double edge2X1 = xValues.get(Integer.parseInt(edge2[1]));
+        double edge2Y1 = yValues.get(Integer.parseInt(edge2[1]));
+
+        //vertex 2 of edge2
+        double edge2X2 = xValues.get(Integer.parseInt(edge2[2]));
+        double edge2Y2 = yValues.get(Integer.parseInt(edge2[2]));
+
+        //To check if two edges lie on the same line we check the angle made
+        //between two vectors using v.w = |v|.|w|.cos(theta), where theta is the
+        //angle formed by two vectors v and w.
+        //If (theta) is 0 or 180 between two vectors then two edges lie on
+        //the same line.
+        //If (A,B) are vertices of edge1 and (C,D) are the vertices of edge2
+        //v=(B-A) for both x and y coordinates.
+        //w1=(C-A) for both x and y coordinates.
+        //w can be w2=(D-A) both x and y coordinates.
+        //Now we find angles between (v and w1) and (v and w2)
+
+        //Coordinates of vector v
+        double vX = edge1X2 - edge1X1;
+        double vY = edge1Y2 - edge1Y1;
+
+        //Coordinates of vector w1
+        double w1X = edge2X1 - edge1X1;
+        double w1Y = edge2Y1 - edge1Y1;
+
+        //Coordinates of vector w2
+        double w2X = edge2X2 - edge1X1;
+        double w2Y = edge2Y2 - edge1Y1;
+
+        //Angle between vector v and w1
+        //arc cosine ((v.w1)/(|v|.|w1|))
+
+        //Lets find v.w1
+        //v.w1 = vx * w1x + vy * w1y
+        double dotProductOfVandW1 = (vX * w1X) + (vY*w1Y);
+        double magnitudeOfV = Math.sqrt((Math.pow(vX, 2)+Math.pow(vY, 2)));
+        double magnitudeOfW1 = Math.sqrt((Math.pow(w1X, 2)+Math.pow(w1Y, 2)));
+
+        double angle1 = Math.toDegrees(Math.acos((dotProductOfVandW1)/(magnitudeOfV*magnitudeOfW1)));
+
+        //Angle between vector v and w2
+        //arc cosine ((v.w2)/(|v|.|w2|))
+        double dotProductOfVandW2 = (vX*w2X)+(vY*w2Y);
+        double magnitudeOfW2 = Math.sqrt((Math.pow(w2X, 2)+Math.pow(w2Y, 2)));
+
+        double angle2 = Math.toDegrees(Math.acos((dotProductOfVandW2)/(magnitudeOfV*magnitudeOfW2)));
+
+        if((angle1==0) || (angle1==180)){
+            if((angle2==0) || (angle2==180)){
+                //if two edges lie on same line
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            //if two edges do not lie on the same line
+            return false;
+        }
 
 
 
+    }
+
+    //To check if two segments overlap
+    public boolean checkIfTwoSegmentsOverlap(String[] edge1, String[] edge2){
+        //vertex 1 of edge1
+        double edge1X1 = xValues.get(Integer.parseInt(edge1[1]));
+        double edge1Y1 = yValues.get(Integer.parseInt(edge1[1]));
+
+        //vertex 2 of edge1
+        double edge1X2 = xValues.get(Integer.parseInt(edge1[2]));
+        double edge1Y2 = yValues.get(Integer.parseInt(edge1[2]));
+
+        //vertex 1 of edge2
+        double edge2X1 = xValues.get(Integer.parseInt(edge2[1]));
+        double edge2Y1 = yValues.get(Integer.parseInt(edge2[1]));
+
+        //vertex 2 of edge2
+        double edge2X2 = xValues.get(Integer.parseInt(edge2[2]));
+        double edge2Y2 = yValues.get(Integer.parseInt(edge2[2]));
+
+
+        //If (A,B) are vertices of edge1 and (C,D) are the vertices of edge2
+        //v=(B-A) for both x and y coordinates.
+        //w1=(C-A) for both x and y coordinates.
+        //w can be w2=(D-A) both x and y coordinates.
+
+        //Coordinates of vector v
+        double vX = edge1X2 - edge1X1;
+        double vY = edge1Y2 - edge1Y1;
+
+        //Coordinates of vector w1
+        double w1X = edge2X1 - edge1X1;
+        double w1Y = edge2Y1 - edge1Y1;
+
+        //Coordinates of vector w2
+        double w2X = edge2X2 - edge1X1;
+        double w2Y = edge2Y2 - edge1Y1;
+
+        //Let b=B−A, c=C−A,and d = D−A.
+        //compute x = (c·b)/(b·b) and y = (d·b)/(b·b).
+        //If both x,y > 1 or x, y < 0, then the line segments don’t intersect.
+        //Here b is v, c is w1, d is w2 for both x and y coordinates
+
+        double x = ((w1X*vX)+(w1Y*vY))/((vX*vX)+(vY*vY));
+        double y = ((w2X*vX)+(w2Y*vY))/((vX*vX)+(vY*vY));
+
+        if(x>1 || x<0){
+            if(y>1 || y<0){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        else{
+            return true;
+        }
+
+    }
 
 
 
