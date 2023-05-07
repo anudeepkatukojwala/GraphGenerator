@@ -83,6 +83,38 @@ public class PreGraphDrawingOperations {
 
     }
 
+    //Check for Collinear Segments for every two edges that don’t share any endpoints
+    public boolean checkForCollinearSegments(){
+        //consider only the edges that do not have
+        //common vertices
+        for(int i=0;i<edges.size()-1;i++){
+            for(int j=i+1;j<edges.size();j++){
+                String[] firstEdge = edges.get(i).split(" ");
+                String[] secondEdge = edges.get(j).split(" ");
+                int firstEdgeFirstVertex = Integer.parseInt(firstEdge[1]);
+                int firstEdgeSecondVertex = Integer.parseInt(firstEdge[2]);
+                int secondEdgeFirstVertex = Integer.parseInt(secondEdge[1]);
+                int secondEdgeSecondVertex = Integer.parseInt(secondEdge[2]);
+                if(firstEdgeFirstVertex == secondEdgeFirstVertex || firstEdgeFirstVertex == secondEdgeSecondVertex || firstEdgeSecondVertex == secondEdgeFirstVertex || firstEdgeSecondVertex == secondEdgeSecondVertex){
+                    continue;
+                }
+                boolean areParallel = checkIfTwoEdgesAreParallel(firstEdge, secondEdge);
+                if(areParallel){
+                    boolean areOnSameLine = checkIfTwoEdgesAreOnSameLine(firstEdge, secondEdge);
+                    if(areOnSameLine){
+                        boolean doTheTwoSegmentsOverlap = checkIfTwoSegmentsOverlap(firstEdge, secondEdge);
+                        if(doTheTwoSegmentsOverlap){
+                            return true;
+                        }
+                    }
+
+                }
+
+            }
+        }
+        return false;
+    }
+
     //To check if two edges that do not share the endpoint are parallel are not using the angle test
     public boolean checkIfTwoEdgesAreParallel(String[] edge1, String[] edge2){
         //Move the edge1 to the origin with one vertex as origin
@@ -125,6 +157,7 @@ public class PreGraphDrawingOperations {
             angle2+=360;
         }
 
+        System.out.println("Angle 1 is: "+angle1+" : "+"Angle 2 is: "+angle2);
 
         if(angle1==angle2){
             return true;
@@ -195,6 +228,8 @@ public class PreGraphDrawingOperations {
 
         double angle2 = Math.toDegrees(Math.acos((dotProductOfVandW2)/(magnitudeOfV*magnitudeOfW2)));
 
+        System.out.println("Inside checkIfTwoEdgesAreOnSameLine subroutine: Angle 1 is: "+angle1+" : "+"Angle 2 is: "+angle2);
+
         if((angle1==0) || (angle1==180)){
             if((angle2==0) || (angle2==180)){
                 //if two edges lie on same line
@@ -256,6 +291,8 @@ public class PreGraphDrawingOperations {
 
         double x = ((w1X*vX)+(w1Y*vY))/((vX*vX)+(vY*vY));
         double y = ((w2X*vX)+(w2Y*vY))/((vX*vX)+(vY*vY));
+
+        System.out.println("Inside checkIfTwoSegmentsOverlap: Value of x:" + x + ": Value of y:"+y);
 
         if(x>1 || x<0){
             if(y>1 || y<0){
