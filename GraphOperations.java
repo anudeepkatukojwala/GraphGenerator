@@ -56,7 +56,7 @@ public class GraphOperations {
                 if(temp<0){
                     temp+=360;
                 }
-                System.out.print(temp+", ");
+
                 //add the angle, vertex mapping to the TreeMap
                 //TreeMap allows us to order the adjacent vertices in counter-clockwise order
                 //with angle 0 being the start point of counter-clockwise ordering
@@ -142,7 +142,7 @@ public class GraphOperations {
         if(parent==Integer.MIN_VALUE){
             Node temp = currList.get(0);
             oneRegionVertices.add(temp.val);
-            System.out.println("Curr: "+temp.val);
+
             temp.visited = true;
             dfs(regions, rotationSystem, visited, temp.val, curr);
         }
@@ -153,7 +153,7 @@ public class GraphOperations {
                     if(temp.visited==true){
 
                         regions.add(new ArrayList<>(oneRegionVertices));
-                        //System.out.println("Curr Region vertices: "+regions);
+
                         oneRegionVertices.clear();
                         Node now = getNextVertex(rotationSystem, curr, parent);
                         if(now==null){
@@ -166,7 +166,7 @@ public class GraphOperations {
                         }
                     }
                     else{
-                        System.out.println("Curr: "+temp.val);
+
                         oneRegionVertices.add(temp.val);
                         temp.visited = true;
                         dfs(regions, rotationSystem, visited, temp.val, curr);
@@ -230,7 +230,7 @@ public class GraphOperations {
                 objects.get(i).add(new Node(currVal));
             }
         }
-        System.out.println(objects);
+        //System.out.println(objects);
         return objects;
     }
 

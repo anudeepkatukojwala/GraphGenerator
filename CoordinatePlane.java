@@ -69,6 +69,13 @@ public class CoordinatePlane extends JFrame {
 //                            System.out.println("Edges cross. Change the input");
 //                            return;
 //                        }
+                        /****************************************************/
+                        //Make the input graph planar triangular
+                        PlanarTriangulation pt = new PlanarTriangulation(xValues, yValues, edg, newObj.getRegions(), newObj.getRotationSystem());
+                        //Update our edg list with newly added edges due to planar triangulation
+                        edg = pt.createPlanarTriangulationOfGivenGraph();
+                        /****************************************************/
+
 
 
                         /****************************************************/
@@ -78,6 +85,7 @@ public class CoordinatePlane extends JFrame {
                         List<List<Double>> newCoordinates = tutteObj.calculateNewVertexPositions();
                         xValues = newCoordinates.get(0);
                         yValues = newCoordinates.get(1);
+                        System.out.println("Final regions are: "+newObj.getRegions());
                         /****************************************************/
 
                         new NewDialog(CoordinatePlane.this, xValues, yValues, edg);
