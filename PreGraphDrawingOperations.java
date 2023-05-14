@@ -29,27 +29,21 @@ public class PreGraphDrawingOperations {
         return true;
     }
 
-    public boolean checkIfAnyEdgesAreCrossingEachOther(){
-        //consider only the edges that do not have
-        //common vertices
-        for(int i=0;i<edges.size()-1;i++){
-            for(int j=i+1;j<edges.size();j++){
-                String[] firstEdge = edges.get(i).split(" ");
-                String[] secondEdge = edges.get(j).split(" ");
-                int firstEdgeFirstVertex = Integer.parseInt(firstEdge[1]);
-                int firstEdgeSecondVertex = Integer.parseInt(firstEdge[2]);
-                int secondEdgeFirstVertex = Integer.parseInt(secondEdge[1]);
-                int secondEdgeSecondVertex = Integer.parseInt(secondEdge[2]);
-                if(firstEdgeFirstVertex == secondEdgeFirstVertex || firstEdgeFirstVertex == secondEdgeSecondVertex || firstEdgeSecondVertex == secondEdgeFirstVertex || firstEdgeSecondVertex == secondEdgeSecondVertex){
-                    continue;
-                }
-                boolean result = findIfEdgesCross(firstEdgeFirstVertex, firstEdgeSecondVertex, secondEdgeFirstVertex, secondEdgeSecondVertex);
-                if(result){
-                    return true;
-                }
+    public boolean checkIfAnyEdgesAreCrossingEachOther(String[] edge1, String[] edge2){
+        //Extract vertices from the given edges
+        //We already know that these are the vertices that do not share any common vertex
+        int firstEdgeFirstVertex = Integer.parseInt(edge1[1]);
+        int firstEdgeSecondVertex = Integer.parseInt(edge1[2]);
+        int secondEdgeFirstVertex = Integer.parseInt(edge2[1]);
+        int secondEdgeSecondVertex = Integer.parseInt(edge2[2]);
 
-            }
+        //Check if the edges cross
+        boolean result = findIfEdgesCross(firstEdgeFirstVertex, firstEdgeSecondVertex, secondEdgeFirstVertex, secondEdgeSecondVertex);
+        //If the edgess cross return true
+        if(result){
+            return true;
         }
+        //Return false since the edges do not cross
         return false;
     }
 
@@ -83,8 +77,17 @@ public class PreGraphDrawingOperations {
 
     }
 
-    //Check for Collinear Segments for every two edges that don’t share any endpoints
-    public boolean checkForCollinearSegments(){
+    //Check for edges overlap and crossover for every two edges that don’t share any endpoints
+    //The way we do this is:
+    //    if parallel,
+    //    1. check if collinear
+    //    if collinear
+    //        2. check if overlapping
+    //        if overlapping: reject
+    //        else: accept
+    //    else: accept
+    //else: do regular crossing check
+    public boolean checkForOverlapOrCrossOverOfAnyTwoEdges(){
         //consider only the edges that do not have
         //common vertices
         for(int i=0;i<edges.size()-1;i++){
@@ -104,8 +107,23 @@ public class PreGraphDrawingOperations {
                     if(areOnSameLine){
                         boolean doTheTwoSegmentsOverlap = checkIfTwoSegmentsOverlap(firstEdge, secondEdge);
                         if(doTheTwoSegmentsOverlap){
+                            //We return true to reject this graph
+                            System.out.println("Edges: "+edges.get(i)+" : "+edges.get(j)+"; " +
+                                    "These two segments overlap");
                             return true;
                         }
+                    }
+
+                }
+                else{
+                    //Check if the two edges are crossing each other with checkIfAnyEdgesAreCrossingEachOther()
+                    boolean doTheEdgesCross = checkIfAnyEdgesAreCrossingEachOther(firstEdge, secondEdge);
+                    if(doTheEdgesCross){
+                        //We reject this graph because of the edges in this
+                        // graph crossing each other
+                        System.out.println("Edges: "+edges.get(i)+" : "+edges.get(j)+"; " +
+                                "These two edges cross each other");
+                        return true;
                     }
 
                 }
