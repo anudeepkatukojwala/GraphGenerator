@@ -54,32 +54,59 @@ public class CoordinatePlane extends JFrame {
                         //System.out.println("yValues are: "+yValues);
                         System.out.println("Edges are: "+edg);
                         reader.close();
-                        GraphOperations newObj = new GraphOperations(xValues, yValues, edg);
-                        PreGraphDrawingOperations tempObj = new PreGraphDrawingOperations(xValues, yValues, edg);
-                        boolean shouldWeContinue = tempObj.checkIfAnyThreePointsAreCollinear(newObj.vertexAngleMapping, newObj.getRotationSystem());
+
+                        //Create object for GraphOperations
+                        GraphOperations graphOperationsObj = new GraphOperations(xValues, yValues, edg);
+
+                        //Create object for PreGraphOperations
+                        PreGraphDrawingOperations preGraphObj = new PreGraphDrawingOperations(xValues, yValues, edg);
+
+                        //Check if any three points in the given graph are collinear
+                        boolean shouldWeContinue = preGraphObj.checkIfAnyThreePointsAreCollinear(graphOperationsObj.vertexAngleMapping, graphOperationsObj.getRotationSystem());
                         System.out.println("Return of checkIfAnyThreePointsAreCollinear: "+shouldWeContinue);
+
+                        //If any three points in the given graph are collinear do not continue drawing the graph
                         if(!shouldWeContinue){
                             System.out.println("Coordinates are collinear");
                             return;
                         }
-                        System.out.println(newObj.getRegions());
 
-//                        boolean doEdgesCross = tempObj.checkIfAnyEdgesAreCrossingEachOther();
-//                        if(doEdgesCross){
-//                            System.out.println("Edges cross. Change the input");
-//                            return;
-//                        }
+                        //Check if any two edges are overlapping or crossing each other
+                        boolean checkForOverlapOrCrossOver = preGraphObj.checkForOverlapOrCrossOverOfAnyTwoEdges();
+                        //If any two edges are overlapping or crossing over, we reject this graph
+                        // and do not continue drawing the graph
+                        if(checkForOverlapOrCrossOver){
+                            return;
+                        }
+
+                        /****************************************************/
+                        //Create a Planar Triangulation of our graph
+                        PlanarTriangulation pt = new PlanarTriangulation(xValues, yValues, edg, graphOperationsObj.getRegions(), graphOperationsObj.getRotationSystem());
+                        List returnOfPlanarTriangulation = pt.createPlanarTriangulationOfGivenGraph();
+                        //Save the new rotationSystem, regions and edges we got after making
+                        //our graph Planar Triangular
+                        //Save the rotationSystem
+                        List<List<Integer>> currRotationSystem = (List<List<Integer>>)returnOfPlanarTriangulation.get(0);
+                        //Save the regions
+                        List<List<Integer>> currRegions = (List<List<Integer>>)returnOfPlanarTriangulation.get(1);
+                        //Update the edges list
+                        edg = (List<String>) returnOfPlanarTriangulation.get(2);
+                        /****************************************************/
 
 
                         /****************************************************/
                         //Change the co-ordinates for Tutte Embedding here
-                        //GraphOperations obj = new GraphOperations(xValues, yValues, edg);
-                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, newObj.getRegions(), newObj.getRotationSystem());
+
+                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem);
+                        //Get the new co-ordinates of our vertices in the new graph we got after Tutte Embedding
                         List<List<Double>> newCoordinates = tutteObj.calculateNewVertexPositions();
+                        //Update of x and y coordinates of our vertices
                         xValues = newCoordinates.get(0);
                         yValues = newCoordinates.get(1);
                         /****************************************************/
 
+                        //Create a new dialog and send our vertices co-ordinates
+                        //and edge list to draw the graph in this new dialog
                         new NewDialog(CoordinatePlane.this, xValues, yValues, edg);
 
                     } catch (IOException ex) {

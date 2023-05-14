@@ -20,6 +20,7 @@ public class GraphOperations {
         this.vertexAngleMapping = new ArrayList<>();
     }
 
+
     //Code for finding Rotation System for each vertex in the graph
     public List<List<Integer>> getRotationSystem(){
         List<List<Integer>> rotationSystem = new ArrayList<>();
@@ -56,7 +57,7 @@ public class GraphOperations {
                 if(temp<0){
                     temp+=360;
                 }
-                System.out.print(temp+", ");
+                //System.out.print(temp+", ");
                 //add the angle, vertex mapping to the TreeMap
                 //TreeMap allows us to order the adjacent vertices in counter-clockwise order
                 //with angle 0 being the start point of counter-clockwise ordering
@@ -92,8 +93,8 @@ public class GraphOperations {
 
 
         }
-        System.out.println("\nRotation System is: "+rotationSystem);
-        System.out.println("VertexAngle mappings are: "+vertexAngleMapping);
+        //System.out.println("\nRotation System is: "+rotationSystem);
+        //System.out.println("VertexAngle mappings are: "+vertexAngleMapping);
 
         sizeOfAdjList = new ArrayList<>();
         for(List<Integer> curr:rotationSystem){
@@ -118,7 +119,7 @@ public class GraphOperations {
             adj.get(y).add(x);
 
         }
-        System.out.println("Adjacency list is: "+ adj);
+        //System.out.println("Adjacency list is: "+ adj);
         return adj;
     }
 
@@ -130,7 +131,7 @@ public class GraphOperations {
         int[] visited = new int[xValues.size()];
         List<List<Node>> rotationSystemOfObjects = getObjectsOfAdjacencyList();
         dfs(regions, rotationSystemOfObjects, visited, 0, Integer.MIN_VALUE);
-        System.out.println("Regions are: "+regions);
+        //System.out.println("Regions are: "+regions);
         return regions;
     }
 
@@ -142,7 +143,7 @@ public class GraphOperations {
         if(parent==Integer.MIN_VALUE){
             Node temp = currList.get(0);
             oneRegionVertices.add(temp.val);
-            System.out.println("Curr: "+temp.val);
+            //System.out.println("Curr: "+temp.val);
             temp.visited = true;
             dfs(regions, rotationSystem, visited, temp.val, curr);
         }
@@ -166,7 +167,7 @@ public class GraphOperations {
                         }
                     }
                     else{
-                        System.out.println("Curr: "+temp.val);
+                        //System.out.println("Curr: "+temp.val);
                         oneRegionVertices.add(temp.val);
                         temp.visited = true;
                         dfs(regions, rotationSystem, visited, temp.val, curr);
@@ -230,7 +231,7 @@ public class GraphOperations {
                 objects.get(i).add(new Node(currVal));
             }
         }
-        System.out.println(objects);
+        //System.out.println(objects);
         return objects;
     }
 
