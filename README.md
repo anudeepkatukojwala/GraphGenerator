@@ -6,4 +6,4 @@ We will also be coming up with ways of generating random planar graphs. Ultimate
 
 
 ## Recent Change
-04/30: Added subroutines for checking collinear segments in the input graph
+05/13: Added subroutines for making the graph Planar Triangular
