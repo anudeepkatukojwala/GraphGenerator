@@ -70,11 +70,18 @@ public class CoordinatePlane extends JFrame {
 //                            return;
 //                        }
 
+                        PlanarTriangulation pt = new PlanarTriangulation(xValues, yValues, edg, newObj.getRegions(), newObj.getRotationSystem());
+                        List returnOfPlanarTriangulation = pt.createPlanarTriangulationOfGivenGraph();
+                        List<List<Integer>> currRotationSystem = (List<List<Integer>>)returnOfPlanarTriangulation.get(0);
+                        List<List<Integer>> currRegions = (List<List<Integer>>)returnOfPlanarTriangulation.get(1);
+                        edg = (List<String>) returnOfPlanarTriangulation.get(2);
+
+
 
                         /****************************************************/
                         //Change the co-ordinates for Tutte Embedding here
                         //GraphOperations obj = new GraphOperations(xValues, yValues, edg);
-                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, newObj.getRegions(), newObj.getRotationSystem());
+                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem);
                         List<List<Double>> newCoordinates = tutteObj.calculateNewVertexPositions();
                         xValues = newCoordinates.get(0);
                         yValues = newCoordinates.get(1);

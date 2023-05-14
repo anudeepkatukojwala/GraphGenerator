@@ -17,10 +17,12 @@ public class TutteEmbedding {
         this.edges = edges;
         this.regions = regions;
         this.rotationSystem = rotationSystem;
+        System.out.println("Rotation System in Tuttes: "+ rotationSystem);
+        System.out.println("Regions in Tuttes: "+regions);
     }
 
     public void selectRegion(){
-        selectedRegion = regions.get(1);
+        selectedRegion = regions.get(0);
 
     }
 
