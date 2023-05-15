@@ -112,6 +112,12 @@ public class PreGraphDrawingOperations {
                                     "These two segments overlap");
                             return true;
                         }
+                        else{
+                            System.out.println("Parallel and on same line, but do not overlap");
+                        }
+                    }
+                    else{
+                        System.out.println("Parallel but not on same line");
                     }
 
                 }
@@ -152,6 +158,7 @@ public class PreGraphDrawingOperations {
         //after moving the vector to origin
         //In that case add 180 to the angle to make it a positive value
         if(angle1<0){
+            System.out.println("Angle1 modified: Original is: "+angle1);
             angle1+=360;
         }
 
@@ -172,10 +179,12 @@ public class PreGraphDrawingOperations {
         //after moving the vector to origin
         //In that case add 180 to the angle to make it a positive value
         if(angle2<0){
+            System.out.println("Angle2 modified: Original is: "+angle2);
             angle2+=360;
         }
 
         System.out.println("Angle 1 is: "+angle1+" : "+"Angle 2 is: "+angle2);
+        System.out.println("Edges are: "+edge1[1]+":"+edge1[2]+" and "+edge2[1]+":"+edge2[2]);
 
         if(angle1==angle2){
             return true;
