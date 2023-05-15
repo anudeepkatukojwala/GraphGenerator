@@ -20,7 +20,9 @@ public class PlanarTriangulation {
         this.oneRegionVertices = new ArrayList<>();
     }
 
-
+    //After Planar Triangulation the edges should be
+    // equivalent to E = 2V-6
+    //where E is edges, V are vertices
     public List createPlanarTriangulationOfGivenGraph(){
         for(int i=0;i<regions.size();){
             List<Integer> currRegion = regions.get(i);

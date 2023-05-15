@@ -50,9 +50,7 @@ public class CoordinatePlane extends JFrame {
                                 edg.add(line);
                             }
                         }
-                        //System.out.println("xValues are: "+xValues);
-                        //System.out.println("yValues are: "+yValues);
-                        System.out.println("Edges are: "+edg);
+
                         reader.close();
 
                         //Create object for GraphOperations
@@ -63,7 +61,7 @@ public class CoordinatePlane extends JFrame {
 
                         //Check if any three points in the given graph are collinear
                         boolean shouldWeContinue = preGraphObj.checkIfAnyThreePointsAreCollinear(graphOperationsObj.vertexAngleMapping, graphOperationsObj.getRotationSystem());
-                        System.out.println("Return of checkIfAnyThreePointsAreCollinear: "+shouldWeContinue);
+
 
                         //If any three points in the given graph are collinear do not continue drawing the graph
                         if(!shouldWeContinue){
@@ -93,6 +91,11 @@ public class CoordinatePlane extends JFrame {
                         edg = (List<String>) returnOfPlanarTriangulation.get(2);
                         /****************************************************/
 
+                        //After Planar Triangulation the edges should be
+                        // equivalent to E = 2V-6
+                        //where E is edges, V are vertices
+                        System.out.println("Edges size is: "+edg.size());
+                        System.out.println("Total Vertices are: "+xValues.size());
 
                         /****************************************************/
                         //Change the co-ordinates for Tutte Embedding here
@@ -104,6 +107,7 @@ public class CoordinatePlane extends JFrame {
                         xValues = newCoordinates.get(0);
                         yValues = newCoordinates.get(1);
                         /****************************************************/
+
 
                         //Create a new dialog and send our vertices co-ordinates
                         //and edge list to draw the graph in this new dialog
