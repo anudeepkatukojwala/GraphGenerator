@@ -50,10 +50,19 @@ public class GraphOperations {
                 double newX = x-originX;
                 double newY = y-originY;
                 //find the angle of curr adjacent vertex using atan2
+
                 double temp = Math.toDegrees(Math.atan2(newY, newX));
+
+                //The range of atan2 is 0 to 180 and 0 to -180
+                //If angle is acute, then the vertex is in 1st quadrant
+                //If the angle is >90 and <=180, vertex is in 2nd quadrant
+                //If the angle is <0 and >-90 vertex is in 4th quadrant
+                //If the angle is <-90 and >-180 vertex is in 3rd quadrant
                 //if the angle is negative it means our adjacent vertex is in quadrant 3 and 4
                 //after moving the vector to origin
-                //In that case add 180 to the angle to make it a positive value
+                //In that case add 360 to the angle to make it a positive value
+                // in the same quadrant
+                //When 360 is added, the angle of the vertex from x-axis line will be calculated
                 if(temp<0){
                     temp+=360;
                 }
