@@ -157,9 +157,10 @@ public class PreGraphDrawingOperations {
         //if the angle is negative it means our edge1[2] vertex is in quadrant 3 and 4
         //after moving the vector to origin
         //In that case add 180 to the angle to make it a positive value
+        //and bring that vertex to 1st or 2nd quadrant
         if(angle1<0){
             System.out.println("Angle1 modified: Original is: "+angle1);
-            angle1+=360;
+            angle1+=180;
         }
 
         //Move the edge2 to the origin with one vertex as origin
@@ -178,18 +179,42 @@ public class PreGraphDrawingOperations {
         //if the angle is negative it means our edge2[2] vertex is in quadrant 3 and 4
         //after moving the vector to origin
         //In that case add 180 to the angle to make it a positive value
+        //and bring that vertex to 1st or 2nd quadrant
         if(angle2<0){
             System.out.println("Angle2 modified: Original is: "+angle2);
-            angle2+=360;
+            angle2+=180;
         }
 
         System.out.println("Angle 1 is: "+angle1+" : "+"Angle 2 is: "+angle2);
-        System.out.println("Edges are: "+edge1[1]+":"+edge1[2]+" and "+edge2[1]+":"+edge2[2]);
+        System.out.println("Inisde Parallel Check: Edges are: "+edge1[1]+":"+edge1[2]+" and "+edge2[1]+":"+edge2[2]);
 
+        //Here we are sure that the edges when moved to origin, are either in 1st or 2nd quadrant
         if(angle1==angle2){
             return true;
         }
         else{
+            //Check the case where they are on the same line;
+            // Example 0 and 180, they are parallel but not have same angle
+            if(angle1<angle2){
+                double smallest = angle1;
+                //Add 180 to the smallest angle
+                smallest+=180;
+                if(angle2==smallest){
+                    System.out.println("Angles are same after adding 180 to angle1");
+                    return true;
+                }
+            }
+            else{
+                double smallest = angle2;
+                //Add 180 to the smallest angle
+                smallest+=180;
+                if(angle1==smallest){
+                    System.out.println("Angles are same after adding 180 to angle2");
+                    return true;
+                }
+            }
+            //Now the angles are not same and the angles are not 180 degrees apart
+            //We are sure that the angles are not parallel to each other
             return false;
         }
 
