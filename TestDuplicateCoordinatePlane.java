@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.List;
 import javax.swing.*;
 
-public class CoordinatePlane extends JFrame {
+public class TestDuplicateCoordinatePlane extends JFrame {
 
     List<Double> xValues = new ArrayList<>();
     List<Double> yValues =  new ArrayList<>();
@@ -21,7 +21,7 @@ public class CoordinatePlane extends JFrame {
 
 
 
-    public CoordinatePlane() {
+    public TestDuplicateCoordinatePlane() {
         setTitle("Coordinate Plane");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -33,7 +33,7 @@ public class CoordinatePlane extends JFrame {
                 if (fileChooser == null) {
                     fileChooser = new JFileChooser();
                 }
-                int result = fileChooser.showOpenDialog(CoordinatePlane.this);
+                int result = fileChooser.showOpenDialog(TestDuplicateCoordinatePlane.this);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     try {
@@ -45,6 +45,7 @@ public class CoordinatePlane extends JFrame {
                         while ((line = reader.readLine()) != null) {
                             String[] currArr = line.split(" ");
                             if(currArr[0].equals("v")){
+
                                 xValues.add(Double.parseDouble(currArr[1]));
                                 yValues.add(Double.parseDouble(currArr[2]));
                             }
@@ -55,71 +56,84 @@ public class CoordinatePlane extends JFrame {
 
                         reader.close();
 
-                        //Create object for GraphOperations
-                        GraphOperations graphOperationsObj = new GraphOperations(xValues, yValues, edg);
-
-                        //Create object for PreGraphOperations
-                        PreGraphDrawingOperations preGraphObj = new PreGraphDrawingOperations(xValues, yValues, edg);
-
-                        //Check if any three points in the given graph are collinear
-                        boolean shouldWeContinue = preGraphObj.checkIfAnyThreePointsAreCollinear(graphOperationsObj.vertexAngleMapping, graphOperationsObj.getRotationSystem());
-
-
-                        //If any three points in the given graph are collinear do not continue drawing the graph
-                        if(!shouldWeContinue){
-                            System.out.println("Coordinates are collinear");
-                            return;
-                        }
-
-                        //Check if any two edges are overlapping or crossing each other
-                        boolean checkForOverlapOrCrossOver = preGraphObj.checkForOverlapOrCrossOverOfAnyTwoEdges();
-                        //If any two edges are overlapping or crossing over, we reject this graph
-                        // and do not continue drawing the graph
-                        if(checkForOverlapOrCrossOver){
-                            return;
-                        }
-
-                        //Size of edg (Number of edges)
-                        int originalSizeOfEdg = edg.size();
-                        System.out.println("\n\nOriginal Size of Edge: "+originalSizeOfEdg);
+//                        //Create object for GraphOperations
+//                        GraphOperations graphOperationsObj = new GraphOperations(xValues, yValues, edg);
+//
+//                        //Create object for PreGraphOperations
+//                        PreGraphDrawingOperations preGraphObj = new PreGraphDrawingOperations(xValues, yValues, edg);
+//
+//                        //Check if any three points in the given graph are collinear
+//                        boolean shouldWeContinue = preGraphObj.checkIfAnyThreePointsAreCollinear(graphOperationsObj.vertexAngleMapping, graphOperationsObj.getRotationSystem());
+//
+//
+//                        //If any three points in the given graph are collinear do not continue drawing the graph
+//                        if(!shouldWeContinue){
+//                            System.out.println("Coordinates are collinear");
+//                            return;
+//                        }
+//
+//                        //Check if any two edges are overlapping or crossing each other
+//                        boolean checkForOverlapOrCrossOver = preGraphObj.checkForOverlapOrCrossOverOfAnyTwoEdges();
+//                        //If any two edges are overlapping or crossing over, we reject this graph
+//                        // and do not continue drawing the graph
+//                        if(checkForOverlapOrCrossOver){
+//                            return;
+//                        }
+//
+//                        //Size of edg (Number of edges)
+//                        int originalSizeOfEdg = edg.size();
+//                        System.out.println("\n\nOriginal Size of Edge: "+originalSizeOfEdg);
+//
+//                        /****************************************************/
+//                        //Create a Planar Triangulation of our graph
+//                        PlanarTriangulation pt = new PlanarTriangulation(xValues, yValues, edg, graphOperationsObj.getRegions(), graphOperationsObj.getRotationSystem());
+//                        List returnOfPlanarTriangulation = pt.createPlanarTriangulationOfGivenGraph();
+//                        //Save the new rotationSystem, regions and edges we got after making
+//                        //our graph Planar Triangular
+//                        //Save the rotationSystem
+//                        List<List<Integer>> currRotationSystem = (List<List<Integer>>)returnOfPlanarTriangulation.get(0);
+//                        //Save the regions
+//                        List<List<Integer>> currRegions = (List<List<Integer>>)returnOfPlanarTriangulation.get(1);
+//                        //Update the edges list
+//                        edg = (List<String>) returnOfPlanarTriangulation.get(2);
+//
+//
+//                        /****************************************************/
+//
+//                        //After Planar Triangulation the edges should be
+//                        // equivalent to E = 2V-6
+//                        //where E is edges, V are vertices
+//                        System.out.println("Edges size is: "+edg.size());
+//                        System.out.println("Total Vertices are: "+xValues.size());
+//
+//                        /****************************************************/
+//                        //Change the co-ordinates for Tutte Embedding here
+//
+//                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem);
+//                        //Get the new co-ordinates of our vertices in the new graph we got after Tutte Embedding
+//                        List<List<Double>> newCoordinates = tutteObj.calculateNewVertexPositions();
+//                        //Update of x and y coordinates of our vertices
+//                        xValues = newCoordinates.get(0);
+//                        yValues = newCoordinates.get(1);
+//                        /****************************************************/
 
                         /****************************************************/
-                        //Create a Planar Triangulation of our graph
-                        PlanarTriangulation pt = new PlanarTriangulation(xValues, yValues, edg, graphOperationsObj.getRegions(), graphOperationsObj.getRotationSystem());
-                        List returnOfPlanarTriangulation = pt.createPlanarTriangulationOfGivenGraph();
-                        //Save the new rotationSystem, regions and edges we got after making
-                        //our graph Planar Triangular
-                        //Save the rotationSystem
-                        List<List<Integer>> currRotationSystem = (List<List<Integer>>)returnOfPlanarTriangulation.get(0);
-                        //Save the regions
-                        List<List<Integer>> currRegions = (List<List<Integer>>)returnOfPlanarTriangulation.get(1);
-                        //Update the edges list
-                        edg = (List<String>) returnOfPlanarTriangulation.get(2);
+
+                        //Testing Rejection Sampling for Kruskal
+                        RejectionSamplingForKruskal rejectionSamplingObj = new RejectionSamplingForKruskal(xValues, yValues, edg);
+//                        List<int[]> allEdges = rejectionSamplingObj.rejectionSamplingProcedure();
+                        List<List<int[]>> returnValue = rejectionSamplingObj.rejectionSamplingProcedure();
+                        List<int[]> allEdges =  returnValue.get(0);
+                        List<int[]> mstEdges = returnValue.get(1);
 
 
-                        /****************************************************/
 
-                        //After Planar Triangulation the edges should be
-                        // equivalent to E = 2V-6
-                        //where E is edges, V are vertices
-                        System.out.println("Edges size is: "+edg.size());
-                        System.out.println("Total Vertices are: "+xValues.size());
-
-                        /****************************************************/
-                        //Change the co-ordinates for Tutte Embedding here
-
-                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem);
-                        //Get the new co-ordinates of our vertices in the new graph we got after Tutte Embedding
-                        List<List<Double>> newCoordinates = tutteObj.calculateNewVertexPositions();
-                        //Update of x and y coordinates of our vertices
-                        xValues = newCoordinates.get(0);
-                        yValues = newCoordinates.get(1);
                         /****************************************************/
 
 
                         //Create a new dialog and send our vertices co-ordinates
                         //and edge list to draw the graph in this new dialog
-                        new NewDialog(CoordinatePlane.this, xValues, yValues, edg, originalSizeOfEdg);
+                        new TestDuplicateNewDialog(TestDuplicateCoordinatePlane.this, xValues, yValues, allEdges,mstEdges, 0);
 
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -138,21 +152,22 @@ public class CoordinatePlane extends JFrame {
 
 
     public static void main(String[] args) {
-        new CoordinatePlane();
+        new TestDuplicateCoordinatePlane();
     }
 }
 
-class NewDialog extends JDialog{
+class TestDuplicateNewDialog extends JDialog{
     private JPanel drawPanel;
     private int newWidth = 600;
     private int newHeight = 600;
 
     List<Double> xValues;
     List<Double> yValues;
-    List<String> edg = new ArrayList<>();
+    List<int[]> edg;
     int originalSizeOfEdg;
+    List<int[]> mstEdges;
 
-    public NewDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<String> edg, int originalSizeOfEdg) {
+    public TestDuplicateNewDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<int[]> edg, List<int[]> mstEdges, int originalSizeOfEdg) {
         super(parent, "Graph", true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(600,600);
@@ -160,6 +175,7 @@ class NewDialog extends JDialog{
         this.xValues = xValues;
         this.yValues = yValues;
         this.edg = edg;
+        this.mstEdges=mstEdges;
         createGUI();
     }
 
@@ -173,7 +189,7 @@ class NewDialog extends JDialog{
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
-            /***************************************************************/
+                /***************************************************************/
                 //Dynamic Scaling Code
                 //Set width and height
                 newWidth = drawPanel.getWidth();
@@ -199,14 +215,16 @@ class NewDialog extends JDialog{
                 //counter for edge label
                 int edgeCounter = 0;
 
-                System.out.println("\n\n\n\n\nOriginal Size of Edge: "+originalSizeOfEdg);
+//                System.out.println("\n\n\n\n\nOriginal Size of Edge: "+originalSizeOfEdg);
 
                 //Draw edges
                 for(int i=0;i<edg.size();i++){
                     //System.out.println("Edges arr size is: "+edg.size());
-                    String[] edgArr = edg.get(i).split(" ");
-                    int currV1 = Integer.parseInt(edgArr[1]);
-                    int currV2 = Integer.parseInt(edgArr[2]);
+                    int[] edgArr = edg.get(i);
+                    int currWeight = edgArr[0];
+                    int currV1 = edgArr[1];
+                    int currV2 = edgArr[2];
+
                     //System.out.println("Edge drawn from: "+edgArr[1]+" to "+edgArr[2]);
                     int x1 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV1)-xMin))/(xMax-xMin)));
 
@@ -217,7 +235,7 @@ class NewDialog extends JDialog{
                     int x2 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV2)-xMin))/(xMax-xMin)));
                     int y2 = (int)Math.round(margin + (double)((H1 * (yMax-yValues.get(currV2)))/(yMax-yMin)));
 
-                    if(i>=originalSizeOfEdg){
+                    if(mstEdges.contains(edgArr)){
                         g.setColor(Color.RED);
                     }
 
@@ -269,7 +287,7 @@ class NewDialog extends JDialog{
 
 
                     //label the edge
-                    g.drawString(Character.toString(97+edgeCounter), x3, y3);
+                    g.drawString(String.valueOf(currWeight), x3, y3);
                     //g.drawLine(xMid, yMid, x3, y3);
                     edgeCounter++;
 

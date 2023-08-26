@@ -11,6 +11,7 @@ public class PlanarTriangulation {
     //Used by getRegions()
     List<Integer> oneRegionVertices;
 
+
     public PlanarTriangulation(List<Double> xValues, List<Double> yValues, List<String> edges, List<List<Integer>> regions, List<List<Integer>> rotationSystem){
         this.xValues = xValues;
         this.yValues = yValues;
@@ -18,6 +19,7 @@ public class PlanarTriangulation {
         this.regions = regions;
         this.rotationSystem = rotationSystem;
         this.oneRegionVertices = new ArrayList<>();
+
     }
 
     //After Planar Triangulation the edges should be
@@ -41,6 +43,7 @@ public class PlanarTriangulation {
         returnList.add(rotationSystem);
         returnList.add(regions);
         returnList.add(edges);
+
         //System.out.println("Return list: "+returnList);
         return returnList;
 
@@ -72,6 +75,7 @@ public class PlanarTriangulation {
                 if(!adjacencyListOfFirstVertex.contains(secondVertex) && !adjacencyListOfSecondVertex.contains(firstVertex)){
                     //Add the edge between firstVertex and secondVertex
                     edges.add("e " + firstVertex + " " + secondVertex);
+
                     System.out.println("New Ear Added: e " + firstVertex + " " + secondVertex);
 
                     //Here we have added an ear
