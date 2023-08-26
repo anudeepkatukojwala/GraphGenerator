@@ -6,4 +6,4 @@ We will also be coming up with ways of generating random planar graphs. Ultimate
 
 
 ## Recent Change
-05/13: Implemented Rejection Sampling procedure for Kruskal algorithm to accept only the graphs that satisfies certain score threshold
+08/25: Implemented Rejection Sampling procedure for Kruskal algorithm to accept only the graphs that satisfies certain score threshold
