@@ -9,6 +9,24 @@ public class RejectionSamplingForKruskal {
         this.edges=edges;
     }
 
+    public List<List<Integer>> getAdjacencyListOfGraphWithWeights(){
+        List<List<Integer>> adj = new ArrayList<>();
+        for(int i=0;i<xValues.size();i++){
+            adj.add(new ArrayList<>());
+        }
+        for(int i=0;i<edges.size();i++){
+            String[] arr=edges.get(i).split(" ");
+            int x=Integer.parseInt(arr[1]);
+            int y=Integer.parseInt(arr[2]);
+
+            adj.get(x).add(y);
+            adj.get(y).add(x);
+
+        }
+        //System.out.println("Adjacency list is: "+ adj);
+        return adj;
+    }
+
 //    public List<Object> addRandomWeights(List<String> edges){
 //
 //    }
@@ -37,7 +55,7 @@ public class RejectionSamplingForKruskal {
 
 
 
-        int scoreThreshold=5;
+        int scoreThreshold=3;
         KruskalAlgo runKruskalAlgorithm = new KruskalAlgo(xValues, yValues, edges);
 
         while(true){
