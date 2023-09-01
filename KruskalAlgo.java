@@ -4,16 +4,16 @@ public class KruskalAlgo {
     List<Double> xValues;
     List<Double> yValues;
     List<String> edges;
-    int totalTimesMinSpanningTreeCalled;
+    int totalTimesKruskalCalled;
     public KruskalAlgo(List<Double> xValues, List<Double> yValues, List<String> edges){
         this.xValues = xValues;
         this.yValues = yValues;
         this.edges = edges;
-        totalTimesMinSpanningTreeCalled=0;
+        totalTimesKruskalCalled=0;
     }
 
     public List minSpanningTree(List<int[]> allEdges) {
-        totalTimesMinSpanningTreeCalled++;
+        totalTimesKruskalCalled++;
         //Total number of nodes "n" is
         int n=xValues.size();
 
@@ -51,9 +51,9 @@ public class KruskalAlgo {
                 score++;
             }
         }
-        System.out.println("Inside minSpanningTree method: curr mstCost: "+mstCost);
-        System.out.println("Inside minSpanningTree method: curr score: "+score);
-        System.out.println("Inside minSpanningTree method: curr totalTimesMinSpanningTreeCalled: "+totalTimesMinSpanningTreeCalled);
+        System.out.println("Inside Kruskal Algorithm: curr mstCost: "+mstCost);
+        System.out.println("Inside Kruskal Algorithm: curr score: "+score);
+        System.out.println("Inside Kruskal Algorithm: curr totalTimesKruskalCalled: "+totalTimesKruskalCalled);
         List result = new ArrayList<>();
         result.add(score);
         result.add(mstEdges);
