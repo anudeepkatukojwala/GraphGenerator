@@ -120,7 +120,7 @@ public class TestDuplicateCoordinatePlane extends JFrame {
                         /****************************************************/
 
                         //Testing Rejection Sampling for Kruskal
-                        RejectionSamplingForKruskal rejectionSamplingObj = new RejectionSamplingForKruskal(xValues, yValues, edg);
+                        RejectionSampling rejectionSamplingObj = new RejectionSampling(xValues, yValues, edg);
 //                        List<int[]> allEdges = rejectionSamplingObj.rejectionSamplingProcedure();
                         List<List<int[]>> returnValue = rejectionSamplingObj.rejectionSamplingProcedure();
                         List<int[]> allEdges =  returnValue.get(0);
