@@ -62,11 +62,13 @@ public class TestSubDivideMethod extends JFrame {
 
                         //Divide the edge as needed
                         SubDivide subDivideObj = new SubDivide(xValues, yValues, edg, graphOperationsObj.getRegions(), graphOperationsObj.getRotationSystem());
-                        List returnOfSubDivide = subDivideObj.testSubDivideMethod(5);
+                        List returnOfSubDivide = subDivideObj.testSubDivideMethod(10);
 
                         xValues = (List<Double>) returnOfSubDivide.get(0);
                         yValues = (List<Double>) returnOfSubDivide.get(1);
                         edg = (List<String>) returnOfSubDivide.get(2);
+
+                        List<List<Integer>> rotationSystemAfterSubDivide = (List<List<Integer>>) returnOfSubDivide.get(3);
 
 
 
@@ -122,6 +124,10 @@ public class TestSubDivideMethod extends JFrame {
 //
 //                        /****************************************************/
 //                        //Change the co-ordinates for Tutte Embedding here
+//
+//                        GraphOperations gObj = new GraphOperations(xValues, yValues, edg);
+//                        List<List<Integer>> currRegions = gObj.getRegions();
+//                        List<List<Integer>> currRotationSystem = gObj.getRotationSystem();
 //
 //                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem);
 //                        //Get the new co-ordinates of our vertices in the new graph we got after Tutte Embedding
@@ -217,7 +223,7 @@ class SubDivideNewDialog extends JDialog{
                 //counter for edge label
                 int edgeCounter = 0;
 
-                System.out.println("\n\n\n\n\nOriginal Size of Edge: "+originalSizeOfEdg);
+//                System.out.println("\n\n\n\n\nOriginal Size of Edge: "+originalSizeOfEdg);
 
                 //Draw edges
                 for(int i=0;i<edg.size();i++){
