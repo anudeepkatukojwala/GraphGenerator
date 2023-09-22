@@ -22,7 +22,7 @@ public class SubDivide {
         this.oneRegionVertices=new ArrayList<>();
     }
 
-    public List testSubDivideMethod(int n){
+    public List testSubDivideMethod(int n, boolean shouldWeChooseExternalRegion){
         for(int i=0;i<n;i++){
             selectTwoValuesToAddEdge();
         }
@@ -42,6 +42,7 @@ public class SubDivide {
         result.add(yValues);
         result.add(edges);
         result.add(rotationSystem);
+        result.add(regions);
 
         return result;
     }

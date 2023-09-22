@@ -108,7 +108,7 @@ public class CoordinatePlane extends JFrame {
                         /****************************************************/
                         //Change the co-ordinates for Tutte Embedding here
 
-                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem);
+                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem, new ArrayList<>());
                         //Get the new co-ordinates of our vertices in the new graph we got after Tutte Embedding
                         List<List<Double>> newCoordinates = tutteObj.calculateNewVertexPositions();
                         //Update of x and y coordinates of our vertices

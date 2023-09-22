@@ -8,6 +8,11 @@ import java.sql.SQLOutput;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.*;
 
 public class TestSubDivideMethod extends JFrame {
 
@@ -62,7 +67,11 @@ public class TestSubDivideMethod extends JFrame {
 
                         //Divide the edge as needed
                         SubDivide subDivideObj = new SubDivide(xValues, yValues, edg, graphOperationsObj.getRegions(), graphOperationsObj.getRotationSystem());
-                        List returnOfSubDivide = subDivideObj.testSubDivideMethod(10);
+
+                        //Parameter for testSubDivideMethod
+                        boolean shouldWeChooseExternalRegion = false;
+
+                        List returnOfSubDivide = subDivideObj.testSubDivideMethod(8, shouldWeChooseExternalRegion);
 
                         xValues = (List<Double>) returnOfSubDivide.get(0);
                         yValues = (List<Double>) returnOfSubDivide.get(1);
@@ -70,7 +79,210 @@ public class TestSubDivideMethod extends JFrame {
 
                         List<List<Integer>> rotationSystemAfterSubDivide = (List<List<Integer>>) returnOfSubDivide.get(3);
 
+                        List<List<Integer>> regionsAfterSubdivide = (List<List<Integer>>) returnOfSubDivide.get(4);
 
+
+
+                        /****************************************************/
+
+
+
+
+                        /****************************************************/
+                        //Now prepare the graph to input to graphviz
+                        List<Integer> regionToPin=null;
+                        if(shouldWeChooseExternalRegion){
+                            int largest=-1;
+
+                            for(List<Integer> currRegion:regionsAfterSubdivide){
+                                if(currRegion.size()>largest){
+                                    largest=currRegion.size();
+                                    regionToPin=currRegion;
+                                }
+                            }
+                        }
+                        else{
+
+                            for(List<Integer> currRegion:regionsAfterSubdivide){
+                                if(currRegion.contains(0) && currRegion.contains(1)){
+                                    regionToPin=currRegion;
+                                }
+                            }
+                        }
+                        System.out.println("Region to Pin is: "+regionToPin);
+
+                        /****************************************************/
+                        int originalVerticesSize = xValues.size();
+//                        System.out.println("Vertices size before Adding Embedding: "+xValues.size());
+                        for(List<Integer> currReg:regionsAfterSubdivide){
+                            if(currReg==regionToPin){
+                                continue;
+                            }
+                            double totalXValue = 0;
+                            double totalYValue = 0;
+                            for(int cV:currReg){
+                                double currXV=xValues.get(cV);
+                                double currYV = yValues.get(cV);
+                                totalXValue+=currXV;
+                                totalYValue+=currYV;
+                            }
+                            double newXV = totalXValue/currReg.size();
+                            double newYV = totalYValue/currReg.size();
+
+                            xValues.add(newXV);
+                            yValues.add(newYV);
+                            int newIndex = xValues.size()-1;
+
+                            ArrayList<Integer> reversedRegionList = new ArrayList<>(currReg);
+                            Collections.reverse(reversedRegionList);
+                            rotationSystemAfterSubDivide.add(new ArrayList<>(reversedRegionList));
+                            for(int i=0;i<currReg.size();i++){
+                                int currVertexInThisRegion=currReg.get(i);
+                                List<Integer> currRotationSystem = rotationSystemAfterSubDivide.get(currVertexInThisRegion);
+                                int  nextVertexAfterCurrVertexInRegion = currReg.get((i+1)%currReg.size());
+                                int findThisNextVertexInRotationSystem = currRotationSystem.indexOf(nextVertexAfterCurrVertexInRegion);
+                                currRotationSystem.add((findThisNextVertexInRotationSystem)%currRotationSystem.size(), newIndex);
+                            }
+                        }
+
+                        edg.clear();
+                        for(int i=0;i<rotationSystemAfterSubDivide.size();i++){
+                            List<Integer> currRotation = rotationSystemAfterSubDivide.get(i);
+                            for(int j:currRotation){
+                                if(i<j){
+                                    edg.add("e "+i+" "+j);
+                                }
+                            }
+                        }
+
+                        System.out.println("New edges in the main method: "+edg);
+
+                        int sizeOfVerticesAfterMakingIt3Connected = xValues.size();
+
+                        /****************************************************/
+                        //Change the co-ordinates for Tutte Embedding here
+
+                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, regionsAfterSubdivide, rotationSystemAfterSubDivide, regionToPin);
+                        //Get the new co-ordinates of our vertices in the new graph we got after Tutte Embedding
+                        List<List<Double>> newCoordinates = tutteObj.calculateNewVertexPositions();
+                        //Update of x and y coordinates of our vertices
+                        xValues = newCoordinates.get(0);
+                        yValues = newCoordinates.get(1);
+
+                        System.out.println("Vertices size after Tutte Embedding: "+xValues.size());
+                        System.out.println("Vertices size before Adding Extra vertices: "+originalVerticesSize);
+//                        //Delete the extra added vertices
+//                        int extraVerticesStartIndex = sizeOfVerticesAfterMakingIt3Connected-originalVerticesSize;
+//                        xValues = xValues.subList(0, extraVerticesStartIndex);
+//                        yValues = yValues.subList(0, extraVerticesStartIndex);
+//
+//                        for(String currEdge:edg){
+//                            String[] currEdgeArr = currEdge.split(" ");
+//                            int v1=Integer.parseInt(currEdgeArr[1]);
+//                            int v2=Integer.parseInt(currEdgeArr[2]);
+//                            if(v1>=extraVerticesStartIndex || v2>=extraVerticesStartIndex){
+//                                edg.remove(currEdge);
+//                            }
+//                        }
+//                        System.out.println("Original Edges are: "+edg);
+
+                        /****************************************************/
+
+
+
+
+
+//                        int nSided = regionToPin.size();
+//                        for(int i=0;i<xValues.size();i++){
+//                            xValues.set(i, 0.0);
+//                            yValues.set(i, 0.0);
+//                        }
+//                        for(int i=0;i<nSided;i++){
+//                            int curr = regionToPin.get(i);
+//                            xValues.set(curr, Math.cos(((2*Math.PI*i)/nSided)));
+//                            yValues.set(curr, Math.sin(((2*Math.PI*i)/nSided)));
+////            xValues.add(Math.cos(((2*Math.PI*i)/nSided)));
+////
+////            yValues.add(Math.sin(((2*Math.PI*i)/nSided)));
+////            //System.out.print(Math.cos(((2*Math.PI*i)/nSided))+" "+Math.sin(((2*Math.PI*i)/nSided))+"\n");
+//
+//                        }
+//
+
+
+                        /****************************************************/
+
+//                        try {
+//                            // Create a file to store the graph in DOT format
+//                            BufferedWriter writer = new BufferedWriter(new FileWriter("graph.dot"));
+//
+//                            // Start the graph definition
+//                            writer.write("graph G {\n");
+////                            writer.write("graph [K=0.01];\n");
+//                            // Write vertices
+//                            for (int i = 0; i < xValues.size(); i++) {
+//                                String pinAttribute = regionToPin.contains(i) ? ", pin=true" : "";
+//                                writer.write("  " + i + " [pos=\"" + xValues.get(i) + "," + yValues.get(i) + "\"" + pinAttribute + "];\n");
+//                            }
+//
+//                            // Write edges
+//                            for (int i = 0; i < edg.size(); i++) {
+//                                String currEdge = edg.get(i);
+//                                String[] edgeArr = currEdge.split(" ");
+////                                writer.write("  " + edgeArr[1] + " -- " + edgeArr[2] + "[weight=0.1]"+";\n");
+//                                writer.write("  " + edgeArr[1] + " -- " + edgeArr[2] + ";\n");
+//                            }
+//
+//                            // End the graph definition
+//                            writer.write("}");
+//                            // Close the file
+//                            writer.close();
+//
+//                            // Run Graphviz fdp command
+//                            String cmd = "neato -Tplain graph.dot -o graph.plain";
+//                            Process process = Runtime.getRuntime().exec(cmd);
+//                            int exitCode = process.waitFor();
+//
+//                            System.out.println("/******************************/");
+//                            // Open the .plain file
+//                            File fil = new File("graph.plain");
+//                            Scanner scanner = new Scanner(fil);
+//
+//                            // Read and process the file line by line
+//                            while (scanner.hasNextLine()) {
+//                                String lin = scanner.nextLine();
+//                                String[] tokens = lin.split("\\s+");
+//
+//                                if (tokens[0].equals("graph")) {
+//                                    System.out.println("Processing graph, width: " + tokens[1] + ", height: " + tokens[2]);
+//                                } else if (tokens[0].equals("node")) {
+//                                    xValues.set(Integer.parseInt(tokens[1]), Double.parseDouble(tokens[2]));
+//                                    yValues.set(Integer.parseInt(tokens[1]), Double.parseDouble(tokens[3]));
+//                                    System.out.println("Processing node, name: " + tokens[1] + ", x: " + tokens[2] + ", y: " + tokens[3]);
+//                                } else if (tokens[0].equals("edge")) {
+//                                    System.out.println("Processing edge, from: " + tokens[1] + ", to: " + tokens[2]);
+//                                } else {
+//                                    System.out.println("Unknown line type: " + lin);
+//                                }
+//                            }
+//
+//                            System.out.println("/******************************/");
+//
+//                            // Close the scanner
+//                            scanner.close();
+//
+//
+//                            System.out.println("Exit code: " + exitCode);
+//
+//                        } catch (IOException | InterruptedException ex) {
+//                            System.out.println("An error occurred: " + ex.getMessage());
+//                        }
+//
+//
+//                        /****************************************************/
+
+                        /****************************************************/
+                        //Now call graphviz from this java program and store it's output
 
                         /****************************************************/
 
