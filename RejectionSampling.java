@@ -91,6 +91,8 @@ public class RejectionSampling {
                 List<List<int[]>> retResult = new ArrayList<>();
                 retResult.add(allEdges);
                 retResult.add(mstEdgesOfKruskal);
+                System.out.println("Kruskal Score is: "+currKruskalScore);
+                System.out.println("Prim's Score is: "+currPrimsScore);
                 return retResult;
             }
 

@@ -11,18 +11,21 @@ public class TutteEmbedding {
 
     List<Integer> selectedRegion;
 
-    public TutteEmbedding(List<Double> xValues, List<Double> yValues, List<String> edges, List<List<Integer>> regions, List<List<Integer>> rotationSystem){
+    List<Integer> regionToPin;
+
+    public TutteEmbedding(List<Double> xValues, List<Double> yValues, List<String> edges, List<List<Integer>> regions, List<List<Integer>> rotationSystem, List<Integer> regionToPin){
         this.xValues = xValues;
         this.yValues = yValues;
         this.edges = edges;
         this.regions = regions;
         this.rotationSystem = rotationSystem;
+        this.regionToPin = regionToPin;
         System.out.println("Rotation System in Tuttes: "+ rotationSystem);
         System.out.println("Regions in Tuttes: "+regions);
     }
 
     public void selectRegion(){
-        selectedRegion = regions.get(0);
+        selectedRegion = regionToPin;
 
     }
 
