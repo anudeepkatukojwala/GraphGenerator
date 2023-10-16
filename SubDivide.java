@@ -103,7 +103,9 @@ public class SubDivide {
             if(index1Edge && index2Edge){
                 String currEdge1 = edgesInThisRegion.get(index1);
                 String currEdge2 = edgesInThisRegion.get(index2);
+                System.out.println("**************************************");
                 subDivideTwoGivenEdgesAndAddEdgeBetweenThem(currEdge1, currEdge2, currPickedRegion);
+                System.out.println("**************************************");
             }
             else if((index1Edge && !index2Edge)){
                 String currEdge = edgesInThisRegion.get(index1);
@@ -115,7 +117,9 @@ public class SubDivide {
                     continue;
                 }
                 else{
+                    System.out.println("**************************************");
                     subDivideGivenEdgeAndAddEdgeBetweenNewVertexAndGivenVertex(currEdge, currVertex, currPickedRegion);
+                    System.out.println("**************************************");
                 }
             }
             else if(!index1Edge && index2Edge){
@@ -128,7 +132,9 @@ public class SubDivide {
                     continue;
                 }
                 else{
+                    System.out.println("**************************************");
                     subDivideGivenEdgeAndAddEdgeBetweenNewVertexAndGivenVertex(currEdge, currVertex, currPickedRegion);
+                    System.out.println("**************************************");
                 }
             }
             else{
@@ -143,7 +149,9 @@ public class SubDivide {
                     continue;
                 }
                 else{
+                    System.out.println("**************************************");
                     addEdgeBetweenTwoGivenVertices(currVertex1, currVertex2, currPickedRegion);
+                    System.out.println("**************************************");
                 }
             }
 
@@ -197,6 +205,7 @@ public class SubDivide {
 
         System.out.println("Inside subDivideGivenEdgeAndAddEdgeBetweenNewVertexAndGivenVertex :edge added: "+"e "+uIndex+" "+indexOfNewlyAddedVertex);
         System.out.println("Inside subDivideGivenEdgeAndAddEdgeBetweenNewVertexAndGivenVertex :edge added: "+"e "+indexOfNewlyAddedVertex+" "+vIndex);
+        System.out.println("Inside subDivideGivenEdgeAndAddEdgeBetweenNewVertexAndGivenVertex :edge added: "+"e "+indexOfNewlyAddedVertex+" "+vertex);
 
         //Add vertices to the rotationSystem
         //Get rotationSystem of u, v, w and then update the rotation system
@@ -235,7 +244,8 @@ public class SubDivide {
 
         //Insert secondVertex at (indexInTheRotationSystemForFirstVertex+1)%sizeOfRegion
         // in our rotationSystem of firstVertex
-        adjacencyListOfFirstVertex.add((indexInTheRotationSystemForFirstVertex + 1) % sizeOfRegion, indexOfNewlyAddedVertex);
+//        adjacencyListOfFirstVertex.add((indexInTheRotationSystemForFirstVertex + 1) % sizeOfRegion, indexOfNewlyAddedVertex);
+        adjacencyListOfFirstVertex.add((indexInTheRotationSystemForFirstVertex + 1), indexOfNewlyAddedVertex); //Temporary line
 
         //Here we have added an ear
         //Now we should verify to see if the rotationSystem reflects the newly added vertices
@@ -347,6 +357,7 @@ public class SubDivide {
 
         System.out.println("Inside subDivideTwoGivenEdgesAndAddEdgeBetweenThem :edge added: "+"e "+uIndex2+" "+indexOfNewlyAddedVertex2);
         System.out.println("Inside subDivideTwoGivenEdgesAndAddEdgeBetweenThem :edge added: "+"e "+indexOfNewlyAddedVertex2+" "+vIndex2);
+        System.out.println("Inside subDivideTwoGivenEdgesAndAddEdgeBetweenThem :edge added: "+"e "+indexOfNewlyAddedVertex+" "+indexOfNewlyAddedVertex2);
 
 
         /////////////////////////////////////////////
@@ -460,11 +471,11 @@ public class SubDivide {
 
             //Insert secondVertex at (indexInTheRotationSystemForFirstVertex+1)%sizeOfRegion
             // in our rotationSystem of firstVertex
-            adjacencyListOfFirstVertex.add((indexInTheRotationSystemForFirstVertex + 1) % sizeOfRegion, secondVertex);
+            adjacencyListOfFirstVertex.add((indexInTheRotationSystemForFirstVertex + 1) , secondVertex);
 
             //Insert firstVertex at (indexInTheRotationSystemForSecondVertex+1)%sizeOfRegion
             //in our rotationSystem of secondVertex
-            adjacencyListOfSecondVertex.add((indexInTheRotationSystemForSecondVertex + 1) % sizeOfRegion, firstVertex);
+            adjacencyListOfSecondVertex.add((indexInTheRotationSystemForSecondVertex + 1) , firstVertex);
 
             //Here we have added an ear
             //Now we should verify to see if the rotationSystem reflects the newly added vertices
@@ -557,11 +568,11 @@ public class SubDivide {
 
                     //Insert secondVertex at (indexInTheRotationSystemForFirstVertex+1)%sizeOfRegion
                     // in our rotationSystem of firstVertex
-                    adjacencyListOfFirstVertex.add((indexInTheRotationSystemForFirstVertex+1)%sizeOfRegion, secondVertex);
+                    adjacencyListOfFirstVertex.add((indexInTheRotationSystemForFirstVertex+1), secondVertex);
 
                     //Insert firstVertex at (indexInTheRotationSystemForSecondVertex+1)%sizeOfRegion
                     //in our rotationSystem of secondVertex
-                    adjacencyListOfSecondVertex.add((indexInTheRotationSystemForSecondVertex+1)%sizeOfRegion, firstVertex);
+                    adjacencyListOfSecondVertex.add((indexInTheRotationSystemForSecondVertex+1), firstVertex);
 
                     //Here we have added an ear
                     //Now we should verify to see if the rotationSystem reflects the newly added vertices
