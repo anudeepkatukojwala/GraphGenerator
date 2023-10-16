@@ -68,7 +68,7 @@ public class RejectionSampling {
 
         List<List<int[]>> adjacencyListWithWeights = getAdjacencyListOfGraphWithWeights();
 
-        int scoreThresholdForPrims=4;
+        int scoreThresholdForPrims=3;
         PrimsAlgorithm runPrimsAlgorithm = new PrimsAlgorithm(xValues, yValues, edges);
 
 

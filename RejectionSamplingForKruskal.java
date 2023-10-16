@@ -54,7 +54,7 @@ public class RejectionSamplingForKruskal {
         }
 
 
-
+        //Max threshold could be (E-V+1)
         int scoreThreshold=3;
         KruskalAlgo runKruskalAlgorithm = new KruskalAlgo(xValues, yValues, edges);
 
