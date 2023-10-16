@@ -26,6 +26,7 @@ public class TutteEmbedding {
 
     public void selectRegion(){
         selectedRegion = regionToPin;
+        System.out.println("Select");
 
     }
 

@@ -71,7 +71,7 @@ public class TestSubDivideMethod extends JFrame {
                         //Parameter for testSubDivideMethod
                         boolean shouldWeChooseExternalRegion = false;
 
-                        List returnOfSubDivide = subDivideObj.testSubDivideMethod(8, shouldWeChooseExternalRegion);
+                        List returnOfSubDivide = subDivideObj.testSubDivideMethod(9, shouldWeChooseExternalRegion);
 
                         xValues = (List<Double>) returnOfSubDivide.get(0);
                         yValues = (List<Double>) returnOfSubDivide.get(1);
@@ -171,20 +171,39 @@ public class TestSubDivideMethod extends JFrame {
 
                         System.out.println("Vertices size after Tutte Embedding: "+xValues.size());
                         System.out.println("Vertices size before Adding Extra vertices: "+originalVerticesSize);
-//                        //Delete the extra added vertices
+                        //Delete the extra added vertices
 //                        int extraVerticesStartIndex = sizeOfVerticesAfterMakingIt3Connected-originalVerticesSize;
-//                        xValues = xValues.subList(0, extraVerticesStartIndex);
-//                        yValues = yValues.subList(0, extraVerticesStartIndex);
-//
-//                        for(String currEdge:edg){
-//                            String[] currEdgeArr = currEdge.split(" ");
-//                            int v1=Integer.parseInt(currEdgeArr[1]);
-//                            int v2=Integer.parseInt(currEdgeArr[2]);
-//                            if(v1>=extraVerticesStartIndex || v2>=extraVerticesStartIndex){
-//                                edg.remove(currEdge);
-//                            }
-//                        }
-//                        System.out.println("Original Edges are: "+edg);
+                        xValues = xValues.subList(0, originalVerticesSize);
+                        yValues = yValues.subList(0, originalVerticesSize);
+
+                        System.out.println("Edges here after removing the extra vertices: "+edg);
+
+                        //Delete the edges
+                        List<Integer> edgeIndicesToRemove = new ArrayList<>();
+
+                        //Get all edges that have at least one endpoint as an extra vertex
+                        for(int i=0;i<edg.size();i++){
+                            String currEdge = edg.get(i);
+                            String[] currEdgeArr = currEdge.split(" ");
+                            int v1=Integer.parseInt(currEdgeArr[1]);
+                            int v2=Integer.parseInt(currEdgeArr[2]);
+                            if(v1>=originalVerticesSize || v2>=originalVerticesSize){
+                                edgeIndicesToRemove.add(i);
+                            }
+                        }
+
+                        // Delete extra vertices and edges
+                        //The reason we reversed edgeIndicesToRemove is because after removing an edge, the indices of remaining edges change
+                        //So we reverse to remove from last to first
+                        //Otherwise indices will be incorrect
+
+                        Collections.reverse(edgeIndicesToRemove);
+                        for(int index : edgeIndicesToRemove){
+
+                            edg.remove(index);
+                        }
+
+                        System.out.println("Final final List of Edges after removing the extra: "+edg);
 
                         /****************************************************/
 
