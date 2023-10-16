@@ -6,4 +6,4 @@ We will also be coming up with ways of generating random planar graphs. Ultimate
 
 
 ## Recent Change
-08/28: Implemented Rejection Sampling procedure for Prims algorithm to accept only the graphs that satisfies certain score threshold
+10/16: Implemented Dijkstra algorithm and it's Rejection Sampling procedure.
