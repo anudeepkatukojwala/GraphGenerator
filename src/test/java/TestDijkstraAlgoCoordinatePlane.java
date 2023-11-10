@@ -1,15 +1,20 @@
+package src.test.java;
+
+import src.main.java.com.graph_generator.rejection_sampling.RejectionSamplingForDijkstra;
+
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.SQLOutput;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
 
-public class TestDuplicateCoordinatePlane extends JFrame {
+
+public class TestDijkstraAlgoCoordinatePlane extends JFrame {
 
     List<Double> xValues = new ArrayList<>();
     List<Double> yValues =  new ArrayList<>();
@@ -21,7 +26,7 @@ public class TestDuplicateCoordinatePlane extends JFrame {
 
 
 
-    public TestDuplicateCoordinatePlane() {
+    public TestDijkstraAlgoCoordinatePlane() {
         setTitle("Coordinate Plane");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -33,7 +38,7 @@ public class TestDuplicateCoordinatePlane extends JFrame {
                 if (fileChooser == null) {
                     fileChooser = new JFileChooser();
                 }
-                int result = fileChooser.showOpenDialog(TestDuplicateCoordinatePlane.this);
+                int result = fileChooser.showOpenDialog(TestDijkstraAlgoCoordinatePlane.this);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     try {
@@ -45,7 +50,6 @@ public class TestDuplicateCoordinatePlane extends JFrame {
                         while ((line = reader.readLine()) != null) {
                             String[] currArr = line.split(" ");
                             if(currArr[0].equals("v")){
-
                                 xValues.add(Double.parseDouble(currArr[1]));
                                 yValues.add(Double.parseDouble(currArr[2]));
                             }
@@ -56,11 +60,11 @@ public class TestDuplicateCoordinatePlane extends JFrame {
 
                         reader.close();
 
-//                        //Create object for GraphOperations
-//                        GraphOperations graphOperationsObj = new GraphOperations(xValues, yValues, edg);
+//                        //Create object for src.main.java.com.graphgenerator.graph.GraphOperations
+//                        src.main.java.com.graphgenerator.graph.GraphOperations graphOperationsObj = new src.main.java.com.graphgenerator.graph.GraphOperations(xValues, yValues, edg);
 //
 //                        //Create object for PreGraphOperations
-//                        PreGraphDrawingOperations preGraphObj = new PreGraphDrawingOperations(xValues, yValues, edg);
+//                        src.main.java.com.graphgenerator.graph.PreGraphDrawingOperations preGraphObj = new src.main.java.com.graphgenerator.graph.PreGraphDrawingOperations(xValues, yValues, edg);
 //
 //                        //Check if any three points in the given graph are collinear
 //                        boolean shouldWeContinue = preGraphObj.checkIfAnyThreePointsAreCollinear(graphOperationsObj.vertexAngleMapping, graphOperationsObj.getRotationSystem());
@@ -86,7 +90,7 @@ public class TestDuplicateCoordinatePlane extends JFrame {
 //
 //                        /****************************************************/
 //                        //Create a Planar Triangulation of our graph
-//                        PlanarTriangulation pt = new PlanarTriangulation(xValues, yValues, edg, graphOperationsObj.getRegions(), graphOperationsObj.getRotationSystem());
+//                        src.main.java.com.graphgenerator.graph.PlanarTriangulation pt = new src.main.java.com.graphgenerator.graph.PlanarTriangulation(xValues, yValues, edg, graphOperationsObj.getRegions(), graphOperationsObj.getRotationSystem());
 //                        List returnOfPlanarTriangulation = pt.createPlanarTriangulationOfGivenGraph();
 //                        //Save the new rotationSystem, regions and edges we got after making
 //                        //our graph Planar Triangular
@@ -109,31 +113,24 @@ public class TestDuplicateCoordinatePlane extends JFrame {
 //                        /****************************************************/
 //                        //Change the co-ordinates for Tutte Embedding here
 //
-//                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem);
+//                        src.main.java.com.graphgenerator.graph.TutteEmbedding tutteObj = new src.main.java.com.graphgenerator.graph.TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem, new ArrayList<>());
 //                        //Get the new co-ordinates of our vertices in the new graph we got after Tutte Embedding
 //                        List<List<Double>> newCoordinates = tutteObj.calculateNewVertexPositions();
 //                        //Update of x and y coordinates of our vertices
 //                        xValues = newCoordinates.get(0);
 //                        yValues = newCoordinates.get(1);
 //                        /****************************************************/
+                        /****************************************************/
+                        RejectionSamplingForDijkstra dObj = new RejectionSamplingForDijkstra(xValues, yValues, edg);
+                        List returnOfDijkstra = dObj.rejectionSamplingProcedure();
+
+                        int[] parent = (int[])returnOfDijkstra.get(0);
 
                         /****************************************************/
-
-                        //Testing Rejection Sampling for Kruskal
-                        RejectionSampling rejectionSamplingObj = new RejectionSampling(xValues, yValues, edg);
-//                        List<int[]> allEdges = rejectionSamplingObj.rejectionSamplingProcedure();
-                        List<List<int[]>> returnValue = rejectionSamplingObj.rejectionSamplingProcedure();
-                        List<int[]> allEdges =  returnValue.get(0);
-                        List<int[]> mstEdges = returnValue.get(1);
-
-
-
-                        /****************************************************/
-
 
                         //Create a new dialog and send our vertices co-ordinates
                         //and edge list to draw the graph in this new dialog
-                        new TestDuplicateNewDialog(TestDuplicateCoordinatePlane.this, xValues, yValues, allEdges,mstEdges, 0);
+                        new TestDijkstraAlgoNewDialog(TestDijkstraAlgoCoordinatePlane.this, xValues, yValues, edg, parent, 0);
 
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -152,22 +149,23 @@ public class TestDuplicateCoordinatePlane extends JFrame {
 
 
     public static void main(String[] args) {
-        new TestDuplicateCoordinatePlane();
+        new TestDijkstraAlgoCoordinatePlane();
     }
 }
 
-class TestDuplicateNewDialog extends JDialog{
+class TestDijkstraAlgoNewDialog extends JDialog{
     private JPanel drawPanel;
     private int newWidth = 600;
     private int newHeight = 600;
 
     List<Double> xValues;
     List<Double> yValues;
-    List<int[]> edg;
+    List<String> edg = new ArrayList<>();
     int originalSizeOfEdg;
-    List<int[]> mstEdges;
+    int[] parentArr;
+    int start;
 
-    public TestDuplicateNewDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<int[]> edg, List<int[]> mstEdges, int originalSizeOfEdg) {
+    public TestDijkstraAlgoNewDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<String> edg, int[] parentArr, int start) {
         super(parent, "Graph", true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(600,600);
@@ -175,7 +173,8 @@ class TestDuplicateNewDialog extends JDialog{
         this.xValues = xValues;
         this.yValues = yValues;
         this.edg = edg;
-        this.mstEdges=mstEdges;
+        this.parentArr = parentArr;
+        this.start = start;
         createGUI();
     }
 
@@ -215,16 +214,15 @@ class TestDuplicateNewDialog extends JDialog{
                 //counter for edge label
                 int edgeCounter = 0;
 
-//                System.out.println("\n\n\n\n\nOriginal Size of Edge: "+originalSizeOfEdg);
+                System.out.println("\n\n\n\n\nOriginal Size of Edge: "+originalSizeOfEdg);
 
                 //Draw edges
                 for(int i=0;i<edg.size();i++){
                     //System.out.println("Edges arr size is: "+edg.size());
-                    int[] edgArr = edg.get(i);
-                    int currWeight = edgArr[0];
-                    int currV1 = edgArr[1];
-                    int currV2 = edgArr[2];
-
+                    String[] edgArr = edg.get(i).split(" ");
+                    int currV1 = Integer.parseInt(edgArr[1]);
+                    int currV2 = Integer.parseInt(edgArr[2]);
+                    int currWeight = Integer.parseInt(edgArr[3]);
                     //System.out.println("Edge drawn from: "+edgArr[1]+" to "+edgArr[2]);
                     int x1 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV1)-xMin))/(xMax-xMin)));
 
@@ -235,8 +233,7 @@ class TestDuplicateNewDialog extends JDialog{
                     int x2 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV2)-xMin))/(xMax-xMin)));
                     int y2 = (int)Math.round(margin + (double)((H1 * (yMax-yValues.get(currV2)))/(yMax-yMin)));
 
-                    if(mstEdges.contains(edgArr)){
-
+                    if(i>=originalSizeOfEdg){
                         g.setColor(Color.RED);
                     }
 
@@ -288,10 +285,35 @@ class TestDuplicateNewDialog extends JDialog{
 
 
                     //label the edge
-                    g.drawString(String.valueOf(currWeight), x3, y3);
+                    g.drawString(Integer.toString(currWeight), x3, y3);
                     //g.drawLine(xMid, yMid, x3, y3);
                     edgeCounter++;
 
+                    //Draw line from currVertex to its parent
+
+                }
+
+                for(int i=0;i<parentArr.length;i++){
+                    if(i!=start){
+                        int currVParent = parentArr[i];
+                        int currV1 = i;
+                        int currV2 = currVParent;
+//                        int currWeight = Integer.parseInt(edgArr[3]);
+                        //System.out.println("Edge drawn from: "+edgArr[1]+" to "+edgArr[2]);
+                        int x1 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV1)-xMin))/(xMax-xMin)));
+
+
+                        int y1 = (int)Math.round(margin + (double)((H1 * (yMax-yValues.get(currV1)))/(yMax-yMin)));
+
+
+                        int x2 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV2)-xMin))/(xMax-xMin)));
+                        int y2 = (int)Math.round(margin + (double)((H1 * (yMax-yValues.get(currV2)))/(yMax-yMin)));
+                        g.setColor(Color.BLACK);
+
+                        g.drawLine(x1, y1, x2, y2);
+
+
+                    }
                 }
 
                 //Label vertices
@@ -318,7 +340,7 @@ class TestDuplicateNewDialog extends JDialog{
             }
         };
         //System.out.println("Adjacency List: "+getAdjacencyListOfGraph(xValues, yValues, edg));
-//        GraphOperations obj = new GraphOperations(xValues, yValues, edg);
+//        src.main.java.com.graphgenerator.graph.GraphOperations obj = new src.main.java.com.graphgenerator.graph.GraphOperations(xValues, yValues, edg);
 //        //obj.getAdjacencyListOfGraph();
 //        obj.getObjectsOfAdjacencyList();
 //        obj.getRegions();

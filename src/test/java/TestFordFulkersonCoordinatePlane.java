@@ -1,3 +1,7 @@
+package src.test.java;
+
+import src.main.java.com.graph_generator.rejection_sampling.RejectionSamplingForFordFulkerson;
+
 import javax.swing.*;
         import java.awt.*;
         import java.awt.event.ActionEvent;
@@ -57,11 +61,11 @@ public class TestFordFulkersonCoordinatePlane extends JFrame {
                         reader.close();
 //                        System.out.println("At the start: Edges read are: " + edg);
 
-//                        //Create object for GraphOperations
-//                        GraphOperations graphOperationsObj = new GraphOperations(xValues, yValues, edg);
+//                        //Create object for src.main.java.com.graphgenerator.graph.GraphOperations
+//                        src.main.java.com.graphgenerator.graph.GraphOperations graphOperationsObj = new src.main.java.com.graphgenerator.graph.GraphOperations(xValues, yValues, edg);
 //
 //                        //Create object for PreGraphOperations
-//                        PreGraphDrawingOperations preGraphObj = new PreGraphDrawingOperations(xValues, yValues, edg);
+//                        src.main.java.com.graphgenerator.graph.PreGraphDrawingOperations preGraphObj = new src.main.java.com.graphgenerator.graph.PreGraphDrawingOperations(xValues, yValues, edg);
 //
 //                        //Check if any three points in the given graph are collinear
 //                        boolean shouldWeContinue = preGraphObj.checkIfAnyThreePointsAreCollinear(graphOperationsObj.vertexAngleMapping, graphOperationsObj.getRotationSystem());
@@ -87,7 +91,7 @@ public class TestFordFulkersonCoordinatePlane extends JFrame {
 //
 //                        /****************************************************/
 //                        //Create a Planar Triangulation of our graph
-//                        PlanarTriangulation pt = new PlanarTriangulation(xValues, yValues, edg, graphOperationsObj.getRegions(), graphOperationsObj.getRotationSystem());
+//                        src.main.java.com.graphgenerator.graph.PlanarTriangulation pt = new src.main.java.com.graphgenerator.graph.PlanarTriangulation(xValues, yValues, edg, graphOperationsObj.getRegions(), graphOperationsObj.getRotationSystem());
 //                        List returnOfPlanarTriangulation = pt.createPlanarTriangulationOfGivenGraph();
 //                        //Save the new rotationSystem, regions and edges we got after making
 //                        //our graph Planar Triangular
@@ -110,7 +114,7 @@ public class TestFordFulkersonCoordinatePlane extends JFrame {
 //                        /****************************************************/
 //                        //Change the co-ordinates for Tutte Embedding here
 //
-//                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem, new ArrayList<>());
+//                        src.main.java.com.graphgenerator.graph.TutteEmbedding tutteObj = new src.main.java.com.graphgenerator.graph.TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem, new ArrayList<>());
 //                        //Get the new co-ordinates of our vertices in the new graph we got after Tutte Embedding
 //                        List<List<Double>> newCoordinates = tutteObj.calculateNewVertexPositions();
 //                        //Update of x and y coordinates of our vertices
@@ -352,7 +356,7 @@ class TestFordFulkersonNewDialog extends JDialog{
             }
         };
         //System.out.println("Adjacency List: "+getAdjacencyListOfGraph(xValues, yValues, edg));
-//        GraphOperations obj = new GraphOperations(xValues, yValues, edg);
+//        src.main.java.com.graphgenerator.graph.GraphOperations obj = new src.main.java.com.graphgenerator.graph.GraphOperations(xValues, yValues, edg);
 //        //obj.getAdjacencyListOfGraph();
 //        obj.getObjectsOfAdjacencyList();
 //        obj.getRegions();
@@ -667,7 +671,7 @@ class TestFordFulkersonResidualGraphDialog extends JDialog{
             }
         };
         //System.out.println("Adjacency List: "+getAdjacencyListOfGraph(xValues, yValues, edg));
-//        GraphOperations obj = new GraphOperations(xValues, yValues, edg);
+//        src.main.java.com.graphgenerator.graph.GraphOperations obj = new src.main.java.com.graphgenerator.graph.GraphOperations(xValues, yValues, edg);
 //        //obj.getAdjacencyListOfGraph();
 //        obj.getObjectsOfAdjacencyList();
 //        obj.getRegions();

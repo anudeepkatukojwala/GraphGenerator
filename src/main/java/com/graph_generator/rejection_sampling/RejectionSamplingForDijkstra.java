@@ -1,3 +1,7 @@
+package src.main.java.com.graph_generator.rejection_sampling;
+
+import src.main.java.com.graph_generator.algorithm.DijkstrasAlgorithm;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.*;

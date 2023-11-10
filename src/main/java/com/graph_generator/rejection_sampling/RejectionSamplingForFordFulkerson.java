@@ -1,3 +1,8 @@
+package src.main.java.com.graph_generator.rejection_sampling;
+
+import src.main.java.com.graph_generator.algorithm.MaxFlow;
+
+
 import java.util.List;
 import java.util.*;
 

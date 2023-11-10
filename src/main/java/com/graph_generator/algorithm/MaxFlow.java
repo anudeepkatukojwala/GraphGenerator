@@ -1,3 +1,5 @@
+package src.main.java.com.graph_generator.algorithm;
+
 import java.util.LinkedList;
 import java.util.*;
 
@@ -59,7 +61,7 @@ public class MaxFlow {
     }
 
 
-    List fordFulkerson(int[][] graph, int s, int t) {
+    public List fordFulkerson(int[][] graph, int s, int t) {
         int u, v;
 
         // Create the residual graph and fill it with input capacities

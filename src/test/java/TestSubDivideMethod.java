@@ -1,18 +1,18 @@
+package src.test.java;
+
+import src.main.java.com.graph_generator.graph.GraphOperations;
+import src.main.java.com.graph_generator.graph.SubDivide;
+import src.main.java.com.graph_generator.graph.TutteEmbedding;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.*;
 
 public class TestSubDivideMethod extends JFrame {
 
@@ -60,7 +60,7 @@ public class TestSubDivideMethod extends JFrame {
 
                         reader.close();
 
-                        //Create object for GraphOperations
+                        //Create object for src.main.java.com.graphgenerator.graph.GraphOperations
                         GraphOperations graphOperationsObj = new GraphOperations(xValues, yValues, edg);
 
                         /****************************************************/
@@ -307,7 +307,7 @@ public class TestSubDivideMethod extends JFrame {
 
 //
 //                        //Create object for PreGraphOperations
-//                        PreGraphDrawingOperations preGraphObj = new PreGraphDrawingOperations(xValues, yValues, edg);
+//                        src.main.java.com.graphgenerator.graph.PreGraphDrawingOperations preGraphObj = new src.main.java.com.graphgenerator.graph.PreGraphDrawingOperations(xValues, yValues, edg);
 //
 //                        //Check if any three points in the given graph are collinear
 //                        boolean shouldWeContinue = preGraphObj.checkIfAnyThreePointsAreCollinear(graphOperationsObj.vertexAngleMapping, graphOperationsObj.getRotationSystem());
@@ -333,7 +333,7 @@ public class TestSubDivideMethod extends JFrame {
 //
 //                        /****************************************************/
 //                        //Create a Planar Triangulation of our graph
-//                        PlanarTriangulation pt = new PlanarTriangulation(xValues, yValues, edg, graphOperationsObj.getRegions(), graphOperationsObj.getRotationSystem());
+//                        src.main.java.com.graphgenerator.graph.PlanarTriangulation pt = new src.main.java.com.graphgenerator.graph.PlanarTriangulation(xValues, yValues, edg, graphOperationsObj.getRegions(), graphOperationsObj.getRotationSystem());
 //                        List returnOfPlanarTriangulation = pt.createPlanarTriangulationOfGivenGraph();
 //                        //Save the new rotationSystem, regions and edges we got after making
 //                        //our graph Planar Triangular
@@ -356,11 +356,11 @@ public class TestSubDivideMethod extends JFrame {
 //                        /****************************************************/
 //                        //Change the co-ordinates for Tutte Embedding here
 //
-//                        GraphOperations gObj = new GraphOperations(xValues, yValues, edg);
+//                        src.main.java.com.graphgenerator.graph.GraphOperations gObj = new src.main.java.com.graphgenerator.graph.GraphOperations(xValues, yValues, edg);
 //                        List<List<Integer>> currRegions = gObj.getRegions();
 //                        List<List<Integer>> currRotationSystem = gObj.getRotationSystem();
 //
-//                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem);
+//                        src.main.java.com.graphgenerator.graph.TutteEmbedding tutteObj = new src.main.java.com.graphgenerator.graph.TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem);
 //                        //Get the new co-ordinates of our vertices in the new graph we got after Tutte Embedding
 //                        List<List<Double>> newCoordinates = tutteObj.calculateNewVertexPositions();
 //                        //Update of x and y coordinates of our vertices
@@ -554,7 +554,7 @@ class SubDivideNewDialog extends JDialog{
             }
         };
         //System.out.println("Adjacency List: "+getAdjacencyListOfGraph(xValues, yValues, edg));
-//        GraphOperations obj = new GraphOperations(xValues, yValues, edg);
+//        src.main.java.com.graphgenerator.graph.GraphOperations obj = new src.main.java.com.graphgenerator.graph.GraphOperations(xValues, yValues, edg);
 //        //obj.getAdjacencyListOfGraph();
 //        obj.getObjectsOfAdjacencyList();
 //        obj.getRegions();
