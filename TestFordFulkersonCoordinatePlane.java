@@ -9,11 +9,6 @@ import javax.swing.*;
         import java.util.ArrayList;
         import java.util.List;
 
-
-
-
-
-
 public class TestFordFulkersonCoordinatePlane extends JFrame {
 
     List<Double> xValues = new ArrayList<>();
@@ -122,28 +117,20 @@ public class TestFordFulkersonCoordinatePlane extends JFrame {
 //                        yValues = newCoordinates.get(1);
 //                        /****************************************************/
                         /****************************************************/
-                        //Call Ford-Fulkerson algorithm to find maximum flow
-                        //Construct the adjacency matrix from the edges list
-                        int[][] adjacencyMatrix = new int[xValues.size()][xValues.size()];
-                        for(String edge : edg){
-                            String[] vertices = edge.split(" ");
-                            int u = Integer.parseInt(vertices[1]);
-                            int v = Integer.parseInt(vertices[2]);
-                            int w = Integer.parseInt(vertices[3]);
-                            adjacencyMatrix[u][v] = w;
-
-                        }
-                        MaxFlow fordFulkerson = new MaxFlow(xValues, yValues, edg);
-
                         // Find the maximum flow
-                        int maxFlow = fordFulkerson.fordFulkerson(adjacencyMatrix, 0, 5);
-                        System.out.println("Max FLow is: "+maxFlow);
+                        RejectionSamplingForFordFulkerson rejectionSamplingForFordFulkerson=new RejectionSamplingForFordFulkerson(xValues, yValues, edg, 0, 5);
+                        List returnOfFordFulkerson = rejectionSamplingForFordFulkerson.rejecionSamplingProcedure();
+                        int maxFlow = (int)returnOfFordFulkerson.get(0);
+//                        System.out.println("Max FLow is: "+maxFlow);
 
+                        int[][] graph = (int[][])returnOfFordFulkerson.get(1);
+                        int[][] rGraph = (int[][])returnOfFordFulkerson.get(2);
+                        edg= (List<String>) returnOfFordFulkerson.get(3);
                         /****************************************************/
 
                         //Create a new dialog and send our vertices co-ordinates
                         //and edge list to draw the graph in this new dialog
-                        new TestFordFulkersonNewDialog(TestFordFulkersonCoordinatePlane.this, xValues, yValues, edg);
+                        new TestFordFulkersonNewDialog(TestFordFulkersonCoordinatePlane.this, xValues, yValues, edg, graph, rGraph);
 
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -175,9 +162,10 @@ class TestFordFulkersonNewDialog extends JDialog{
     List<Double> yValues;
     List<String> edg = new ArrayList<>();
     int originalSizeOfEdg;
+    int[][] graph;
+    int[][] rGraph;
 
-
-    public TestFordFulkersonNewDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<String> edg) {
+    public TestFordFulkersonNewDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<String> edg, int[][] graph, int[][] rGraph) {
         super(parent, "Graph", true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(600,600);
@@ -185,7 +173,8 @@ class TestFordFulkersonNewDialog extends JDialog{
         this.xValues = xValues;
         this.yValues = yValues;
         this.edg = edg;
-
+        this.graph = graph;
+        this.rGraph = rGraph;
         createGUI();
     }
 
@@ -236,7 +225,7 @@ class TestFordFulkersonNewDialog extends JDialog{
                     int currWeight = Integer.parseInt(edgArr[3]);
 //                    System.out.println("Are we here");
 
-                    //System.out.println("Edge drawn from: "+edgArr[1]+" to "+edgArr[2]);
+//                    System.out.println("Edge drawn from: "+edgArr[1]+" to "+edgArr[2]);
                     int x1 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV1)-xMin))/(xMax-xMin)));
 
 
@@ -251,7 +240,7 @@ class TestFordFulkersonNewDialog extends JDialog{
 //                    }
                     g.setColor(Color.BLACK);
                     g.drawLine(x1, y1, x2, y2);
-//                    drawArrow(g, x1, y1, x2, y2, direction);
+                    drawArrow(g, x1, y1, x2, y2, 0);
 
 
 
@@ -295,12 +284,16 @@ class TestFordFulkersonNewDialog extends JDialog{
                     }
 
 
-                    int x3 = (int)Math.round(xMid + (20*vX));
-                    int y3 = (int)Math.round(yMid + (20*vY));
+                    int x3 = (int)Math.round(xMid + (30*vX));
+                    int y3 = (int)Math.round(yMid + (30*vY));
 
 
                     //label the edge
-                    g.drawString(Integer.toString(currWeight), x3, y3);
+                    int flow = rGraph[currV1][currV2];
+                    int capacity = graph[currV1][currV2];
+                    flow=capacity-flow;
+//                    System.out.println("Flow/Capacity of this edge: "+flow+"/"+capacity);
+                    g.drawString(flow+"/"+capacity, x3, y3);
 
                     //Now draw the direction for the edge
 
