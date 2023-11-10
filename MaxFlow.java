@@ -7,6 +7,11 @@ public class MaxFlow {
     List<String> edges;
 
     int V; // Number of vertices in graph
+    private int[][] graph;
+    private boolean[] visited;
+    private int pathCount;
+    List<Integer> path;
+    List<List<Integer>> allPaths;
 
 
     public MaxFlow(List<Double> xValues, List<Double> yValues, List<String> edges) {
@@ -14,6 +19,10 @@ public class MaxFlow {
         this.yValues = yValues;
         this.edges = edges;
         this.V = xValues.size();
+        this.visited = new boolean[xValues.size()];
+        this.pathCount = 0;
+        this.path = new ArrayList<>();
+        this.allPaths = new ArrayList<>();
     }
 
 
@@ -75,9 +84,10 @@ public class MaxFlow {
                 rGraph2[u][v] = rGraph[u][v];
             }
         }
+        boolean test=false;
         System.out.println("Residual graph: This iteration: "+Arrays.deepToString(rGraph));
         // Continue finding paths from 's' to 't' until none are found
-        while (bfs(rGraph, s, t, parent)) {
+        while (test) {
             // Find bottleneck (minimum residual capacity) along the path
             int pathFlow = Integer.MAX_VALUE;
             for (v = t; v != s; v = parent[v]) {
@@ -114,20 +124,30 @@ public class MaxFlow {
         }
         //Check whether there is unique path from source to sink in the
         //residual graph
-        boolean uniquePathExists = uniquesPathExists(graph, rGraph2, s, t);
-        int[][] test=new int[V][V];
-        for(int i=0;i<V;i++){
-            for(int j=0;j<V;j++){
-                test[i][j]=graph[i][j]-rGraph[i][j];
-            }
-        }
-        System.out.println("Inside forFulkerson: test graph = "+Arrays.deepToString(test));
+//        boolean uniquePathExists = uniquesPathExists(graph, rGraph2, s, t);
+        // ckeck if unique path exists
+        this.pathCount=0;
+        this.graph = rGraph2;
+        this.visited = new boolean[xValues.size()];
+
+        int paths=countPaths(s, t);
+        System.out.println("paths is: "+paths);
+        System.out.println("All paths are: "+allPaths);
+        boolean uniquePathExists = (paths == 1);
+//        int[][] test=new int[V][V];
+//        for(int i=0;i<V;i++){
+//            for(int j=0;j<V;j++){
+//                test[i][j]=graph[i][j]-rGraph[i][j];
+//            }
+//        }
+        System.out.println("Inside forFulkerson: rGraph2 graph = "+Arrays.deepToString(rGraph2));
         List result = new ArrayList<>();
         result.add(maxFlow);
         result.add(graph);
         result.add(rGraph);
         result.add(edges);
-        result.add(uniquePathExists); //add boolean indicating unique path exists
+        result.add(true); //add boolean indicating unique path exists
+        result.add(rGraph2); //add residual graph from last iteration
         // Return the max flow
         return result;
     }
@@ -135,11 +155,11 @@ public class MaxFlow {
     public boolean uniquesPathExists(int[][] graph, int[][] rGraph, int s, int t) {
 //        System.out.println("Inside uniquePathExists: rGraph is: "+Arrays.deepToString(rGraph));
 //        System.out.println("Inside uniquePathExists: graph is: "+Arrays.deepToString(graph));
-        for(int i=0;i<V;i++){
-            for(int j=0;j<V;j++){
-                rGraph[i][j]=graph[i][j]-rGraph[i][j]; //subtract residual capacity from original capacity
-            }
-        }
+//        for(int i=0;i<V;i++){
+//            for(int j=0;j<V;j++){
+//                rGraph[i][j]=graph[i][j]-rGraph[i][j]; //subtract residual capacity from original capacity
+//            }
+//        }
 //        System.out.println("Inside uniquePathExists: rGraph after subtraction is: "+Arrays.deepToString(rGraph));
         //Construct adjacency list from edgelist
 
@@ -171,8 +191,27 @@ public class MaxFlow {
             totalPaths+=dp[t][d];
         }
 //        System.out.println("Inside uniquePathExists method: dp array is: "+Arrays.deepToString(dp));
-//        System.out.println("Inside uniquePathExists method: totalPaths: "+totalPaths);
-        return 2==2; //return true if only one path exists
+        System.out.println("Inside uniquePathExists method: totalPaths: "+totalPaths);
+        return 1==1; //return true if only one path exists
+    }
+
+    public int countPaths(int s, int t) {
+        visited[s] = true;
+        path.add(s);
+        if (s == t) {
+            allPaths.add(new ArrayList<>(path));
+            pathCount++;
+
+        } else {
+            for (int i = 0; i < graph.length; i++) {
+                if (!visited[i] && graph[s][i] > 0) { // Check if there's an edge
+                    countPaths(i, t);
+                }
+            }
+        }
+        path.remove(path.size()-1);
+        visited[s] = false; // Backtrack
+        return pathCount;
     }
 
 }

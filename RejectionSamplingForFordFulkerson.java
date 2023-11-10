@@ -89,7 +89,7 @@ public class RejectionSamplingForFordFulkerson {
             MaxFlow fordFulkerson = new MaxFlow(xValues, yValues, edges);
 
             // Find the maximum flow
-            List returnOfFordFulkerson = fordFulkerson.fordFulkerson(adjacencyMatrix, 0, 5);
+            List returnOfFordFulkerson = fordFulkerson.fordFulkerson(adjacencyMatrix, start, end);
             int maxFlow = (int)returnOfFordFulkerson.get(0);
             System.out.println("Max FLow is: "+maxFlow);
             int[][] graph = (int[][])returnOfFordFulkerson.get(1);
