@@ -1,3 +1,5 @@
+package src.main.java.com.graph_generator.algorithm;
+
 public class UnionFind {
     public int[] group;
     public int[] rank;

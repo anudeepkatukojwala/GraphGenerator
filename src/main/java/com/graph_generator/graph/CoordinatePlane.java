@@ -1,13 +1,15 @@
+package src.main.java.com.graph_generator.graph;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
+
 
 public class CoordinatePlane extends JFrame {
 
@@ -55,7 +57,7 @@ public class CoordinatePlane extends JFrame {
 
                         reader.close();
 
-                        //Create object for GraphOperations
+                        //Create object for src.main.java.com.graphgenerator.graph.GraphOperations
                         GraphOperations graphOperationsObj = new GraphOperations(xValues, yValues, edg);
 
                         //Create object for PreGraphOperations
@@ -299,7 +301,7 @@ class NewDialog extends JDialog{
             }
         };
         //System.out.println("Adjacency List: "+getAdjacencyListOfGraph(xValues, yValues, edg));
-//        GraphOperations obj = new GraphOperations(xValues, yValues, edg);
+//        src.main.java.com.graphgenerator.graph.GraphOperations obj = new src.main.java.com.graphgenerator.graph.GraphOperations(xValues, yValues, edg);
 //        //obj.getAdjacencyListOfGraph();
 //        obj.getObjectsOfAdjacencyList();
 //        obj.getRegions();

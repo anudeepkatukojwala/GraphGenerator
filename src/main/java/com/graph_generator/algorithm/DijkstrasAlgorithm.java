@@ -1,6 +1,8 @@
+package src.main.java.com.graph_generator.algorithm;
+
 import java.util.*;
 
-class DijkstrasAlgorithm {
+public class DijkstrasAlgorithm {
     private int V; // Number of vertices
     private List<List<DEdge>> adj;
 

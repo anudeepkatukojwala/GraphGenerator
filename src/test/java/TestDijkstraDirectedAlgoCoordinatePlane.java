@@ -1,3 +1,7 @@
+package src.test.java;
+
+import src.main.java.com.graph_generator.rejection_sampling.RejectionSamplingForDijkstraDirected;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,7 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class TestDijkstraAlgoCoordinatePlane extends JFrame {
+
+
+
+
+public class TestDijkstraDirectedAlgoCoordinatePlane extends JFrame {
 
     List<Double> xValues = new ArrayList<>();
     List<Double> yValues =  new ArrayList<>();
@@ -22,7 +30,7 @@ public class TestDijkstraAlgoCoordinatePlane extends JFrame {
 
 
 
-    public TestDijkstraAlgoCoordinatePlane() {
+    public TestDijkstraDirectedAlgoCoordinatePlane() {
         setTitle("Coordinate Plane");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,7 +42,7 @@ public class TestDijkstraAlgoCoordinatePlane extends JFrame {
                 if (fileChooser == null) {
                     fileChooser = new JFileChooser();
                 }
-                int result = fileChooser.showOpenDialog(TestDijkstraAlgoCoordinatePlane.this);
+                int result = fileChooser.showOpenDialog(TestDijkstraDirectedAlgoCoordinatePlane.this);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     try {
@@ -55,12 +63,13 @@ public class TestDijkstraAlgoCoordinatePlane extends JFrame {
                         }
 
                         reader.close();
+//                        System.out.println("At the start: Edges read are: " + edg);
 
-//                        //Create object for GraphOperations
-//                        GraphOperations graphOperationsObj = new GraphOperations(xValues, yValues, edg);
+//                        //Create object for src.main.java.com.graphgenerator.graph.GraphOperations
+//                        src.main.java.com.graphgenerator.graph.GraphOperations graphOperationsObj = new src.main.java.com.graphgenerator.graph.GraphOperations(xValues, yValues, edg);
 //
 //                        //Create object for PreGraphOperations
-//                        PreGraphDrawingOperations preGraphObj = new PreGraphDrawingOperations(xValues, yValues, edg);
+//                        src.main.java.com.graphgenerator.graph.PreGraphDrawingOperations preGraphObj = new src.main.java.com.graphgenerator.graph.PreGraphDrawingOperations(xValues, yValues, edg);
 //
 //                        //Check if any three points in the given graph are collinear
 //                        boolean shouldWeContinue = preGraphObj.checkIfAnyThreePointsAreCollinear(graphOperationsObj.vertexAngleMapping, graphOperationsObj.getRotationSystem());
@@ -86,7 +95,7 @@ public class TestDijkstraAlgoCoordinatePlane extends JFrame {
 //
 //                        /****************************************************/
 //                        //Create a Planar Triangulation of our graph
-//                        PlanarTriangulation pt = new PlanarTriangulation(xValues, yValues, edg, graphOperationsObj.getRegions(), graphOperationsObj.getRotationSystem());
+//                        src.main.java.com.graphgenerator.graph.PlanarTriangulation pt = new src.main.java.com.graphgenerator.graph.PlanarTriangulation(xValues, yValues, edg, graphOperationsObj.getRegions(), graphOperationsObj.getRotationSystem());
 //                        List returnOfPlanarTriangulation = pt.createPlanarTriangulationOfGivenGraph();
 //                        //Save the new rotationSystem, regions and edges we got after making
 //                        //our graph Planar Triangular
@@ -109,7 +118,7 @@ public class TestDijkstraAlgoCoordinatePlane extends JFrame {
 //                        /****************************************************/
 //                        //Change the co-ordinates for Tutte Embedding here
 //
-//                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem, new ArrayList<>());
+//                        src.main.java.com.graphgenerator.graph.TutteEmbedding tutteObj = new src.main.java.com.graphgenerator.graph.TutteEmbedding(xValues, yValues, edg, currRegions, currRotationSystem, new ArrayList<>());
 //                        //Get the new co-ordinates of our vertices in the new graph we got after Tutte Embedding
 //                        List<List<Double>> newCoordinates = tutteObj.calculateNewVertexPositions();
 //                        //Update of x and y coordinates of our vertices
@@ -117,16 +126,19 @@ public class TestDijkstraAlgoCoordinatePlane extends JFrame {
 //                        yValues = newCoordinates.get(1);
 //                        /****************************************************/
                         /****************************************************/
-                        RejectionSamplingForDijkstra dObj = new RejectionSamplingForDijkstra(xValues, yValues, edg);
+
+                        RejectionSamplingForDijkstraDirected dObj = new RejectionSamplingForDijkstraDirected(xValues, yValues, edg, 0, 4);
                         List returnOfDijkstra = dObj.rejectionSamplingProcedure();
 
                         int[] parent = (int[])returnOfDijkstra.get(0);
-
+                        edg = (List<String>) returnOfDijkstra.get(2);
+                        List<Integer> distancesArrayList = (List<Integer>) returnOfDijkstra.get(3);
+                        System.out.println("Edges after the dijkstra: "+edg);
                         /****************************************************/
 
                         //Create a new dialog and send our vertices co-ordinates
                         //and edge list to draw the graph in this new dialog
-                        new TestDijkstraAlgoNewDialog(TestDijkstraAlgoCoordinatePlane.this, xValues, yValues, edg, parent, 0);
+                        new TestDijkstraDirectedAlgoNewDialog(TestDijkstraDirectedAlgoCoordinatePlane.this, xValues, yValues, edg, parent, 0, distancesArrayList);
 
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -145,11 +157,11 @@ public class TestDijkstraAlgoCoordinatePlane extends JFrame {
 
 
     public static void main(String[] args) {
-        new TestDijkstraAlgoCoordinatePlane();
+        new TestDijkstraDirectedAlgoCoordinatePlane();
     }
 }
 
-class TestDijkstraAlgoNewDialog extends JDialog{
+class TestDijkstraDirectedAlgoNewDialog extends JDialog{
     private JPanel drawPanel;
     private int newWidth = 600;
     private int newHeight = 600;
@@ -161,7 +173,9 @@ class TestDijkstraAlgoNewDialog extends JDialog{
     int[] parentArr;
     int start;
 
-    public TestDijkstraAlgoNewDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<String> edg, int[] parentArr, int start) {
+    List<Integer> distancesArrayList;
+
+    public TestDijkstraDirectedAlgoNewDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<String> edg, int[] parentArr, int start, List<Integer> distancesArrayList) {
         super(parent, "Graph", true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(600,600);
@@ -171,6 +185,7 @@ class TestDijkstraAlgoNewDialog extends JDialog{
         this.edg = edg;
         this.parentArr = parentArr;
         this.start = start;
+        this.distancesArrayList = distancesArrayList;
         createGUI();
     }
 
@@ -219,6 +234,8 @@ class TestDijkstraAlgoNewDialog extends JDialog{
                     int currV1 = Integer.parseInt(edgArr[1]);
                     int currV2 = Integer.parseInt(edgArr[2]);
                     int currWeight = Integer.parseInt(edgArr[3]);
+//                    System.out.println("Are we here");
+                    int direction = Integer.parseInt(edgArr[4]);
                     //System.out.println("Edge drawn from: "+edgArr[1]+" to "+edgArr[2]);
                     int x1 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV1)-xMin))/(xMax-xMin)));
 
@@ -229,13 +246,15 @@ class TestDijkstraAlgoNewDialog extends JDialog{
                     int x2 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV2)-xMin))/(xMax-xMin)));
                     int y2 = (int)Math.round(margin + (double)((H1 * (yMax-yValues.get(currV2)))/(yMax-yMin)));
 
-                    if(i>=originalSizeOfEdg){
-                        g.setColor(Color.RED);
-                    }
-
-                    g.drawLine(x1, y1, x2, y2);
-
+//                    if(direction==1){
+//                        g.setColor(Color.RED);
+//                    }
                     g.setColor(Color.BLACK);
+                    g.drawLine(x1, y1, x2, y2);
+                    drawArrow(g, x1, y1, x2, y2, direction);
+
+
+
 
                     int xMid = (int)Math.round((double)(x1+x2)/2);
                     int yMid = (int)Math.round((double)(y1+y2)/2);
@@ -276,18 +295,26 @@ class TestDijkstraAlgoNewDialog extends JDialog{
                     }
 
 
-                    int x3 = (int)Math.round(xMid + (15*vX));
-                    int y3 = (int)Math.round(yMid + (15*vY));
+                    int x3 = (int)Math.round(xMid + (20*vX));
+                    int y3 = (int)Math.round(yMid + (20*vY));
 
 
                     //label the edge
                     g.drawString(Integer.toString(currWeight), x3, y3);
+
+                    //Now draw the direction for the edge
+
+
+
+
                     //g.drawLine(xMid, yMid, x3, y3);
                     edgeCounter++;
 
                     //Draw line from currVertex to its parent
 
                 }
+
+
 
                 for(int i=0;i<parentArr.length;i++){
                     if(i!=start){
@@ -304,9 +331,28 @@ class TestDijkstraAlgoNewDialog extends JDialog{
 
                         int x2 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV2)-xMin))/(xMax-xMin)));
                         int y2 = (int)Math.round(margin + (double)((H1 * (yMax-yValues.get(currV2)))/(yMax-yMin)));
-                        g.setColor(Color.BLACK);
+                        g.setColor(Color.RED);
 
                         g.drawLine(x1, y1, x2, y2);
+
+                        //Now find which edge we are currently redrawing and draw the arrow with
+                        //the same color
+                        for(String currEdge:edg){
+                            String[] currEdgeArr = currEdge.split(" ");
+                            int v1 = Integer.parseInt(currEdgeArr[1]);
+                            int v2 = Integer.parseInt(currEdgeArr[2]);
+                            int weight = Integer.parseInt(currEdgeArr[3]);
+                            int direction = Integer.parseInt(currEdgeArr[4]);
+
+                            if((currV1==v1 && currV2==v2)){
+                                drawArrow(g, x1, y1, x2, y2, direction);
+                                break;
+                            }
+                            else if((currV1==v2 && currV2==v1)){
+                                drawArrow(g, x1, y1, x2, y2, direction==1?0:1);
+                                break;
+                            }
+                        }
 
 
                     }
@@ -328,6 +374,11 @@ class TestDijkstraAlgoNewDialog extends JDialog{
                     //g.setColor(Color.RED);
                     g.setFont(f1);
                     g.drawString(String.valueOf(labelCounter), x-2, y+3);
+
+                    //Write the shortest distance from the source to this vertex
+                    int shortestDistanceToThisVertex = distancesArrayList.get(labelCounter);
+                    g.drawString("("+shortestDistanceToThisVertex+")", x-25, y+15);
+
                     labelCounter++;
                     g.setFont(null);
                     //g.setColor(Color.BLACK);
@@ -336,7 +387,7 @@ class TestDijkstraAlgoNewDialog extends JDialog{
             }
         };
         //System.out.println("Adjacency List: "+getAdjacencyListOfGraph(xValues, yValues, edg));
-//        GraphOperations obj = new GraphOperations(xValues, yValues, edg);
+//        src.main.java.com.graphgenerator.graph.GraphOperations obj = new src.main.java.com.graphgenerator.graph.GraphOperations(xValues, yValues, edg);
 //        //obj.getAdjacencyListOfGraph();
 //        obj.getObjectsOfAdjacencyList();
 //        obj.getRegions();
@@ -348,6 +399,46 @@ class TestDijkstraAlgoNewDialog extends JDialog{
         setVisible(true);
         pack();
     }
+
+    private void drawArrow(Graphics g, int x1, int y1, int x2, int y2, int direction) {
+        int arrowLength = 15;
+        int arrowWidth = 7;
+
+        // Calculate midpoint
+        int mx = (x1 + x2) / 2;
+        int my = (y1 + y2) / 2;
+
+        // Calculate direction vector based on the "direction" variable
+        double dx, dy;
+        if (direction == 0) {
+            dx = x2 - x1;
+            dy = y2 - y1;
+        } else {
+            dx = x1 - x2;
+            dy = y1 - y2;
+        }
+
+        // Normalize direction vector
+        double length = Math.sqrt(dx * dx + dy * dy);
+        dx /= length;
+        dy /= length;
+
+        // Calculate triangle (arrowhead) points using the direction vector and midpoint
+        Point arrowTip = new Point((int) (mx + arrowLength * dx), (int) (my + arrowLength * dy));
+        Point arrowLeft = new Point((int) (mx - arrowWidth * dy), (int) (my + arrowWidth * dx));
+        Point arrowRight = new Point((int) (mx + arrowWidth * dy), (int) (my - arrowWidth * dx));
+
+        // Draw triangle
+        Polygon arrowPolygon = new Polygon();
+        arrowPolygon.addPoint(arrowTip.x, arrowTip.y);
+        arrowPolygon.addPoint(arrowLeft.x, arrowLeft.y);
+        arrowPolygon.addPoint(arrowRight.x, arrowRight.y);
+        g.fillPolygon(arrowPolygon);
+    }
+
+
+
+
 
 
     //Find xMin, xMax, yMin, yMax
@@ -422,3 +513,4 @@ class TestDijkstraAlgoNewDialog extends JDialog{
 
 
 }
+
