@@ -14,6 +14,8 @@ public class MaxFlow {
     private int pathCount;
     List<Integer> path;
     List<List<Integer>> allPaths;
+    List<Integer> sSide;
+    List<Integer> tSide;
 
 
     public MaxFlow(List<Double> xValues, List<Double> yValues, List<String> edges) {
@@ -25,6 +27,8 @@ public class MaxFlow {
         this.pathCount = 0;
         this.path = new ArrayList<>();
         this.allPaths = new ArrayList<>();
+        this.sSide= new ArrayList<>();
+        this.tSide= new ArrayList<>();
     }
 
 
@@ -77,6 +81,9 @@ public class MaxFlow {
         // Parent array to store the path found by BFS
         int[] parent = new int[V];
 
+        // rParent array to store the path found by BFS in previous iteration
+        int[] rParent = new int[V];
+
         // The overall max flow result
         int maxFlow = 0;
 
@@ -89,7 +96,7 @@ public class MaxFlow {
         boolean test=false;
         System.out.println("Residual graph: This iteration: "+Arrays.deepToString(rGraph));
         // Continue finding paths from 's' to 't' until none are found
-        while (test) {
+        while (bfs(rGraph, s, t, parent)) {
             // Find bottleneck (minimum residual capacity) along the path
             int pathFlow = Integer.MAX_VALUE;
             for (v = t; v != s; v = parent[v]) {
@@ -115,6 +122,11 @@ public class MaxFlow {
 
             // Increment the overall max flow by bottleneck of the path
             maxFlow += pathFlow;
+
+            //Copy currenet parent array to rParent to store path
+            for (int i = 0; i < V; i++) {
+                rParent[i] = parent[i];
+            }
 
 //            //save current rGraph in rGraph2 before modification
 //            for (u = 0; u < V; u++) {
@@ -142,14 +154,22 @@ public class MaxFlow {
 //                test[i][j]=graph[i][j]-rGraph[i][j];
 //            }
 //        }
-        System.out.println("Inside forFulkerson: rGraph2 graph = "+Arrays.deepToString(rGraph2));
+
+        //Calculate the min-cut here
+        minCut(rGraph, s, t, sSide, tSide);
+        System.out.println("Inside fordFulkerson: minCut sSide = "+sSide);
+        System.out.println("Inside fordFulkerson: minCut tSide = "+tSide);
+        System.out.println("Inside fordFulkerson: rGraph2 graph = "+Arrays.deepToString(rGraph2));
         List result = new ArrayList<>();
         result.add(maxFlow);
         result.add(graph);
         result.add(rGraph);
         result.add(edges);
-        result.add(true); //add boolean indicating unique path exists
+        result.add(uniquePathExists); //add boolean indicating unique path exists
         result.add(rGraph2); //add residual graph from last iteration
+        result.add(allPaths.get(0)); //add path if unique
+        result.add(sSide); //add sSide
+        result.add(tSide); //add tSide
         // Return the max flow
         return result;
     }
@@ -214,6 +234,36 @@ public class MaxFlow {
         path.remove(path.size()-1);
         visited[s] = false; // Backtrack
         return pathCount;
+    }
+
+    // Method to perform BFS and categorize vertices into S and T sides of min-cut
+    public void minCut(int[][] rGraph, int s, int t, List<Integer> sSide, List<Integer> tSide) {
+
+        // Perform BFS on the residual graph
+        boolean[] visited = new boolean[V];
+        LinkedList<Integer> queue = new LinkedList<>();
+        queue.add(s);
+        visited[s] = true;
+
+        while (!queue.isEmpty()) {
+            int u = queue.poll();
+
+            for (int v = 0; v < V; v++) {
+                if (rGraph[u][v] > 0 && !visited[v]) {
+                    queue.add(v);
+                    visited[v] = true;
+                }
+            }
+        }
+
+        // Categorize vertices based on BFS result
+        for (int i = 0; i < V; i++) {
+            if (visited[i]) {
+                sSide.add(i); // Vertex is on the source side
+            } else {
+                tSide.add(i); // Vertex is on the sink side
+            }
+        }
     }
 
 }
