@@ -6,7 +6,8 @@ import javax.swing.*;
         import java.awt.*;
         import java.awt.event.ActionEvent;
         import java.awt.event.ActionListener;
-        import java.io.BufferedReader;
+import java.awt.geom.QuadCurve2D;
+import java.io.BufferedReader;
         import java.io.File;
         import java.io.FileReader;
         import java.io.IOException;
@@ -135,16 +136,24 @@ public class TestFordFulkersonCoordinatePlane extends JFrame {
                         System.out.println("rGraph: "+Arrays.deepToString(rGraph));
                         //Print rGraph2
                         System.out.println("rGraph2: "+Arrays.deepToString(rGraph2));
+
+                        //Print unique aumenting path
+                        List<Integer> uniqueAugmentingPath = (List<Integer>)returnOfFordFulkerson.get(6);
+                        System.out.println("Unique Aumenting Path is: "+uniqueAugmentingPath);
+
+                        List<Integer> sSide = (List<Integer>) returnOfFordFulkerson.get(7);
+                        List<Integer> tSide = (List<Integer>) returnOfFordFulkerson.get(8);
+
                         edg= (List<String>) returnOfFordFulkerson.get(3);
                         /****************************************************/
 
                         //Create a new dialog and send our vertices co-ordinates
                         //and edge list to draw the graph in this new dialog
-                        JDialog dialog1=new TestFordFulkersonNewDialog(TestFordFulkersonCoordinatePlane.this, xValues, yValues, edg, graph, rGraph);
+                        JDialog dialog1=new TestFordFulkersonNewDialog(TestFordFulkersonCoordinatePlane.this, xValues, yValues, edg, graph, rGraph, sSide, tSide);
                         dialog1.setSize(600, 600);
 
                         //Create a new dialog for drawing residual graph of ford fulkerson
-                        JDialog dialog2=new TestFordFulkersonResidualGraphDialog(TestFordFulkersonCoordinatePlane.this, xValues, yValues, edg, graph, rGraph, rGraph2);
+                        JDialog dialog2=new TestFordFulkersonResidualGraphDialog(TestFordFulkersonCoordinatePlane.this, xValues, yValues, edg, graph, rGraph, rGraph2, uniqueAugmentingPath);
                         dialog2.setSize(600, 600);
                         // Display the dialogs
                         dialog1.setVisible(true);
@@ -182,8 +191,10 @@ class TestFordFulkersonNewDialog extends JDialog{
     int originalSizeOfEdg;
     int[][] graph;
     int[][] rGraph;
+    List<Integer> sSide;
+    List<Integer> tSide;
 
-    public TestFordFulkersonNewDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<String> edg, int[][] graph, int[][] rGraph) {
+    public TestFordFulkersonNewDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<String> edg, int[][] graph, int[][] rGraph, List<Integer> sSide, List<Integer> tSide) {
         super(parent, "Graph1", false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(600,600);
@@ -193,6 +204,8 @@ class TestFordFulkersonNewDialog extends JDialog{
         this.edg = edg;
         this.graph = graph;
         this.rGraph = rGraph;
+        this.sSide = sSide;
+        this.tSide = tSide;
         createGUI();
     }
 
@@ -338,7 +351,11 @@ class TestFordFulkersonNewDialog extends JDialog{
                     int x=curr.get(0);
                     int y=curr.get(1);
                     g.setColor(Color.WHITE);
+                    if(tSide.contains(labelCounter)){
+                        g.setColor(Color.CYAN);
+                    }
                     g.fillOval(x-(10), y-(10), 20*(int)Math.sqrt(2), 20*(int)Math.sqrt(2));
+                    g.setColor(Color.WHITE);
                     g.setColor(Color.BLACK);
                     g.drawOval(x-(10), y-(10), 20*(int)Math.sqrt(2), 20*(int)Math.sqrt(2));
 
@@ -496,8 +513,9 @@ class TestFordFulkersonResidualGraphDialog extends JDialog{
     int[][] graph;
     int[][] rGraph;
     int[][] rGraph2;
+    List<Integer> uniqueAugmentingPath;
 
-    public TestFordFulkersonResidualGraphDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<String> edg, int[][] graph, int[][] rGraph, int[][] rGraph2) {
+    public TestFordFulkersonResidualGraphDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<String> edg, int[][] graph, int[][] rGraph, int[][] rGraph2, List<Integer> uniqueAugmentingPath) {
         super(parent, "Residual Graph", false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(600,600);
@@ -508,6 +526,7 @@ class TestFordFulkersonResidualGraphDialog extends JDialog{
         this.graph = graph;
         this.rGraph = rGraph;
         this.rGraph2 = rGraph2;
+        this.uniqueAugmentingPath = uniqueAugmentingPath;
         createGUI();
     }
 
@@ -573,9 +592,53 @@ class TestFordFulkersonResidualGraphDialog extends JDialog{
 //                    }
                     g.setColor(Color.BLACK);
                     g.drawLine(x1, y1, x2, y2);
-                    drawArrow(g, x1, y1, x2, y2, 0);
+                    //boolean variable to indicate if arrow should be black or red color
+                    boolean red=false;
+                    //check if the current edge is part of the unique augmenting path
+                    if(uniqueAugmentingPath.contains(currV1) && uniqueAugmentingPath.contains(currV2)){
+                        int i1=uniqueAugmentingPath.indexOf(currV1);
+                        int i2=uniqueAugmentingPath.indexOf(currV2);
+                        if(i1==(i2-1)){
+                            System.out.println("Augmenting path edge: "+currV1+" to "+currV2);
+                            red=true;
+                        }
+                        else if(i2==(i1-1)){
+                            System.out.println("Augmenting path edge: "+currV2+" to "+currV1);
+                            red=true;
+                        }
+                    }
 
+                    drawArrow(g, x1, y1, x2, y2, 0, red);
 
+                    //Draw reverse edges in red color
+                    g.setColor(Color.RED);
+                    //Set control
+
+                    int ctrlX = ((x1+x2)/3)+20, ctrlY = ((y1+y2)/3)+20;
+                    //Mid point
+                    double xM = (x1+x2)/2.0;
+                    double yM = (y1+y2)/2.0;
+
+                    int delX = (x2-x1);
+                    int delY = (y2-y1);
+                    double lamba=0.3;
+                    int pX=-delY, pY=delX;
+
+                    ctrlX = (int)(xM+lamba*pX);
+                    ctrlY = (int)(yM+lamba*pY);
+
+                    //Draw reverse edge if present
+                    int rEdge = rGraph2[currV2][currV1];
+                    //Create graphics 2D object
+                    Graphics2D g2d = (Graphics2D) g;
+
+                    if(rEdge > 0){
+                        // Draw the curved line
+                        QuadCurve2D q = new QuadCurve2D.Float(x1, y1, ctrlX, ctrlY, x2, y2);
+                        g2d.draw(q);
+                    }
+
+                    g.setColor(Color.BLACK);
 
 
                     int xMid = (int)Math.round((double)(x1+x2)/2);
@@ -653,6 +716,7 @@ class TestFordFulkersonResidualGraphDialog extends JDialog{
                     int x=curr.get(0);
                     int y=curr.get(1);
                     g.setColor(Color.WHITE);
+
                     g.fillOval(x-(10), y-(10), 20*(int)Math.sqrt(2), 20*(int)Math.sqrt(2));
                     g.setColor(Color.BLACK);
                     g.drawOval(x-(10), y-(10), 20*(int)Math.sqrt(2), 20*(int)Math.sqrt(2));
@@ -684,7 +748,7 @@ class TestFordFulkersonResidualGraphDialog extends JDialog{
         pack();
     }
 
-    private void drawArrow(Graphics g, int x1, int y1, int x2, int y2, int direction) {
+    private void drawArrow(Graphics g, int x1, int y1, int x2, int y2, int direction, boolean red) {
         int arrowLength = 15;
         int arrowWidth = 7;
 
@@ -717,7 +781,11 @@ class TestFordFulkersonResidualGraphDialog extends JDialog{
         arrowPolygon.addPoint(arrowTip.x, arrowTip.y);
         arrowPolygon.addPoint(arrowLeft.x, arrowLeft.y);
         arrowPolygon.addPoint(arrowRight.x, arrowRight.y);
+        if(red){
+            g.setColor(Color.RED);
+        }
         g.fillPolygon(arrowPolygon);
+        g.setColor(Color.BLACK);
     }
 
 
