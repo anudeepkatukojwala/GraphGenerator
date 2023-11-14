@@ -1,6 +1,8 @@
+package src.main.java.com.graph_generator.algorithm;
+
 import java.util.*;
 
-class DijkstrasAlgorithmDirected {
+public class DijkstrasAlgorithmDirected {
     private int V; // Number of vertices
     private List<List<DEdgeDirected>> adj;
 

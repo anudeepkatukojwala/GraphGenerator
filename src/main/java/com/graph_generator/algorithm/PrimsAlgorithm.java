@@ -1,3 +1,5 @@
+package src.main.java.com.graph_generator.algorithm;
+
 import java.util.*;
 
 public class PrimsAlgorithm {
@@ -42,7 +44,7 @@ public class PrimsAlgorithm {
             if (inMST[currNode]) {
                 continue;
             }
-            System.out.println("Inside PrimsAlgorithm: prevNode: "+prevNode+"currNode: "+currNode);
+            System.out.println("Inside src.main.java.com.graphgenerator.algorithm.PrimsAlgorithm: prevNode: "+prevNode+"currNode: "+currNode);
             inMST[currNode] = true;
             mstCost += weight;
             edgesUsed++;
@@ -75,9 +77,9 @@ public class PrimsAlgorithm {
 //            int v2=nodesIncludedInMst.get(i+1);
 //            edgesInMst.add(new int[]{v1, v2});
 //        }
-        System.out.println("Inside PrimsAlgorithm: nodesIncludedInMst: "+nodesIncludedInMst);
-        System.out.println("Inside PrimsAlgorithm: mstCost: "+mstCost);
-        System.out.println("Inside PrimsAlgorithm: score: "+score);
+        System.out.println("Inside src.main.java.com.graphgenerator.algorithm.PrimsAlgorithm: nodesIncludedInMst: "+nodesIncludedInMst);
+        System.out.println("Inside src.main.java.com.graphgenerator.algorithm.PrimsAlgorithm: mstCost: "+mstCost);
+        System.out.println("Inside src.main.java.com.graphgenerator.algorithm.PrimsAlgorithm: score: "+score);
         List result = new ArrayList<>();
         result.add(score);
         result.add(edgesInMst);

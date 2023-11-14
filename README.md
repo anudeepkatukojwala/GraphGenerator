@@ -6,4 +6,4 @@ We will also be coming up with ways of generating random planar graphs. Ultimate
 
 
 ## Recent Change
-10/16: Implemented Dijkstra algorithm and it's Rejection Sampling procedure.
+11/10: Implemented rejection sampling for Ford-Fulkerson algorithm

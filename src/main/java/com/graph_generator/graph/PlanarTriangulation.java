@@ -1,5 +1,6 @@
+package src.main.java.com.graph_generator.graph;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class PlanarTriangulation {
@@ -221,7 +222,7 @@ public class PlanarTriangulation {
     // each vertex.
 
 
-    //To convert adjacency list (or rotation system) to objects of Node class.
+    //To convert adjacency list (or rotation system) to objects of src.main.java.com.graphgenerator.graph.Node class.
     public List<List<Node>> getObjectsOfAdjacencyList(){
         //List<List<Integer>> rotationSystem = getRotationSystem();
         List<List<Node>> objects = new ArrayList<>();

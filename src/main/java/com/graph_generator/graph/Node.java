@@ -1,4 +1,4 @@
-import java.util.*;
+package src.main.java.com.graph_generator.graph;
 
 class Node {
     int val;

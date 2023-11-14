@@ -1,3 +1,5 @@
+package src.main.java.com.graph_generator.graph;
+
 import java.util.*;
 import org.apache.commons.math4.legacy.linear.*;
 

@@ -1,3 +1,5 @@
+package src.main.java.com.graph_generator.graph;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -397,7 +399,7 @@ public class SubDivide {
 //        System.out.println("After adding edges rotation system is: "+rotationSystem);
 //        System.out.println("Edges now are: "+edges);
 //        System.out.println("New call to calculate rotationSystem: "+graphOperationsObj.getRotationSystem());
-//        graphOperationsObj = new GraphOperations(xValues, yValues, edges);
+//        graphOperationsObj = new src.main.java.com.graphgenerator.graph.GraphOperations(xValues, yValues, edges);
 //        System.out.println("New New call to calculate rotationSystem: "+graphOperationsObj.getRotationSystem());
 
 
@@ -600,7 +602,7 @@ public class SubDivide {
         System.out.println("Curr picked region in subdivide: "+currPickedRegion);
 
 
-        System.out.println("Rotation system in SubDivide: "+rotationSystem);
+        System.out.println("Rotation system in src.main.java.com.graphgenerator.graph.SubDivide: "+rotationSystem);
         List returnOfEdgesInGivenRegion = edgesInGivenRegion(currPickedRegion);
         Map<String, Integer> allEdgesInThisRegionWithIndexMap = (Map<String, Integer>)returnOfEdgesInGivenRegion.get(0);
 
@@ -788,7 +790,7 @@ public class SubDivide {
 //        System.out.println("After adding edges rotation system is: "+rotationSystem);
 //        System.out.println("Edges now are: "+edges);
 //        System.out.println("New call to calculate rotationSystem: "+graphOperationsObj.getRotationSystem());
-//        graphOperationsObj = new GraphOperations(xValues, yValues, edges);
+//        graphOperationsObj = new src.main.java.com.graphgenerator.graph.GraphOperations(xValues, yValues, edges);
 //        System.out.println("New New call to calculate rotationSystem: "+graphOperationsObj.getRotationSystem());
 
 
@@ -1010,7 +1012,7 @@ public class SubDivide {
     // each vertex.
 
 
-    //To convert adjacency list (or rotation system) to objects of Node class.
+    //To convert adjacency list (or rotation system) to objects of src.main.java.com.graphgenerator.graph.Node class.
     public List<List<Node>> getObjectsOfAdjacencyList(){
         //List<List<Integer>> rotationSystem = getRotationSystem();
         List<List<Node>> objects = new ArrayList<>();
