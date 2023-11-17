@@ -100,9 +100,10 @@ public class RejectionSamplingForFordFulkerson {
             int[][] graph = (int[][])returnOfFordFulkerson.get(1);
             int[][] rGraph = (int[][])returnOfFordFulkerson.get(2);
             boolean uniquePathExists = (boolean)returnOfFordFulkerson.get(4);
-
+            List<Integer> sSide = (List<Integer>) returnOfFordFulkerson.get(7);
+            List<Integer> tSide = (List<Integer>) returnOfFordFulkerson.get(8);
             System.out.println("Final Edges are: "+edges);
-            if(uniquePathExists){
+            if(uniquePathExists && Math.abs(sSide.size()-tSide.size())<=1){
                 return returnOfFordFulkerson;
             }
         }
