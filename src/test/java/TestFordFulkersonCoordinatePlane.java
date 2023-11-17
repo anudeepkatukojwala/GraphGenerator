@@ -6,6 +6,7 @@ import javax.swing.*;
         import java.awt.*;
         import java.awt.event.ActionEvent;
         import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.QuadCurve2D;
 import java.io.BufferedReader;
         import java.io.File;
@@ -591,27 +592,33 @@ class TestFordFulkersonResidualGraphDialog extends JDialog{
 //                        g.setColor(Color.RED);
 //                    }
                     g.setColor(Color.BLACK);
-                    g.drawLine(x1, y1, x2, y2);
+                    //Create graphics 2D object
+                    Graphics2D g2d = (Graphics2D) g.create(); // Create a copy for safe transformations
+                    g2d.setColor(Color.BLACK);
                     //boolean variable to indicate if arrow should be black or red color
-                    boolean red=false;
-                    //check if the current edge is part of the unique augmenting path
+                    boolean redForForward=false;
+                    boolean redForBackward=false;
+                    //check if the current forward edge is part of the unique augmenting path
                     if(uniqueAugmentingPath.contains(currV1) && uniqueAugmentingPath.contains(currV2)){
                         int i1=uniqueAugmentingPath.indexOf(currV1);
                         int i2=uniqueAugmentingPath.indexOf(currV2);
                         if(i1==(i2-1)){
                             System.out.println("Augmenting path edge: "+currV1+" to "+currV2);
-                            red=true;
+                            g.setColor(Color.RED);
+//                            g2d.setColor(Color.RED);
+                            redForForward=true;
                         }
                         else if(i2==(i1-1)){
                             System.out.println("Augmenting path edge: "+currV2+" to "+currV1);
-                            red=true;
+//                            g.setColor(Color.RED);
+                            g2d.setColor(Color.RED);
+                            redForBackward=true;
                         }
                     }
+                    g.drawLine(x1, y1, x2, y2);
 
-                    drawArrow(g, x1, y1, x2, y2, 0, red);
+                    drawArrow(g, x1, y1, x2, y2, 0, redForForward);
 
-                    //Draw reverse edges in red color
-                    g.setColor(Color.RED);
                     //Set control
 
                     int ctrlX = ((x1+x2)/3)+20, ctrlY = ((y1+y2)/3)+20;
@@ -621,7 +628,7 @@ class TestFordFulkersonResidualGraphDialog extends JDialog{
 
                     int delX = (x2-x1);
                     int delY = (y2-y1);
-                    double lamba=0.3;
+                    double lamba=0.2;
                     int pX=-delY, pY=delX;
 
                     ctrlX = (int)(xM+lamba*pX);
@@ -629,17 +636,36 @@ class TestFordFulkersonResidualGraphDialog extends JDialog{
 
                     //Draw reverse edge if present
                     int rEdge = rGraph2[currV2][currV1];
-                    //Create graphics 2D object
-                    Graphics2D g2d = (Graphics2D) g;
+                    double t = 0.5; // Parameter for midpoint
+
+                    int midXOnCurve = (int) (Math.pow(1 - t, 2) * x1 + 2 * (1 - t) * t * ctrlX + Math.pow(t, 2) * x2);
+                    int midYOnCurve = (int) (Math.pow(1 - t, 2) * y1 + 2 * (1 - t) * t * ctrlY + Math.pow(t, 2) * y2);
+
+                    // Calculate the slope at the midpoint
+                    double slopeX = 2 * (1 - t) * (ctrlX - x1) + 2 * t * (x2 - ctrlX);
+                    double slopeY = 2 * (1 - t) * (ctrlY - y1) + 2 * t * (y2 - ctrlY);
 
                     if(rEdge > 0){
-                        // Draw the curved line
-                        QuadCurve2D q = new QuadCurve2D.Float(x1, y1, ctrlX, ctrlY, x2, y2);
-                        g2d.draw(q);
+                        try {
+                            // Draw the curved line
+                            QuadCurve2D q = new QuadCurve2D.Float(x1, y1, ctrlX, ctrlY, x2, y2);
+                            g2d.draw(q);
+                            //Calculate the flow, capacity and residual capacity for this backward edge
+                            //label the edge
+                            int residualCapacityForBackwardEdge = rGraph2[currV2][currV1];
+//                            int capacityForBackwardEdge = graph[currV2][currV1];
+//                            int flowForBackwardEdge=capacityForBackwardEdge-residualCapacityForBackwardEdge;
+
+                            //Draw the arrow on this curved edge
+                            drawArrowAndLabelOnCurve(g2d, midXOnCurve, midYOnCurve, slopeX, slopeY, 1, redForBackward, residualCapacityForBackwardEdge+"");
+                        } finally {
+                            g2d.dispose(); // Dispose of the copy to keep the original Graphics context clean
+                        }
+
                     }
 
                     g.setColor(Color.BLACK);
-
+                    g2d.setColor(Color.BLACK);
 
                     int xMid = (int)Math.round((double)(x1+x2)/2);
                     int yMid = (int)Math.round((double)(y1+y2)/2);
@@ -680,8 +706,8 @@ class TestFordFulkersonResidualGraphDialog extends JDialog{
                     }
 
 
-                    int x3 = (int)Math.round(xMid + (30*vX));
-                    int y3 = (int)Math.round(yMid + (30*vY));
+                    int x3 = (int)Math.round(xMid + (20*vX));
+                    int y3 = (int)Math.round(yMid + (20*vY));
 
 
                     //label the edge
@@ -788,10 +814,66 @@ class TestFordFulkersonResidualGraphDialog extends JDialog{
         g.setColor(Color.BLACK);
     }
 
+    private void drawArrowAndLabelOnCurve(Graphics2D g2d, double x, double y, double slopeX, double slopeY, int direction, boolean red, String label) {
+        // Save the original transform
+        AffineTransform originalTransform = g2d.getTransform();
+        // Set color for the arrow
+        if (red) {
+            g2d.setColor(Color.RED);
+        } else {
+            g2d.setColor(Color.BLACK);
+        }
 
+        // Calculate the angle of the arrow
+        double angle = Math.atan2(slopeY, slopeX);
 
+        // Adjust angle based on direction
+        if (direction == 1) {
+            angle += Math.PI; // Reverse the arrow direction
+        }
 
+        // Length and width of the arrow
+        int arrowLength = 10;
+        int arrowWidth = 5;
 
+        // Create an arrow shape
+        Polygon arrowHead = new Polygon();
+        arrowHead.addPoint(0, 0);
+        arrowHead.addPoint(-arrowWidth, -arrowLength);
+        arrowHead.addPoint(arrowWidth, -arrowLength);
+
+        AffineTransform tx = new AffineTransform();
+        tx.translate(x, y);
+        tx.rotate(angle - Math.PI / 2);
+
+        Shape transformedArrowHead = tx.createTransformedShape(arrowHead);
+        g2d.fill(transformedArrowHead);
+
+        // Reset to the original transform before setting a new one for the label
+        g2d.setTransform(originalTransform);
+
+        // Set the font size larger for visibility
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 12));
+
+        // Calculate the perpendicular offset for the label based on the slope of the curve
+        double labelOffsetMagnitude = 20; // You can adjust this value as needed
+        double angleToMoveLabel = Math.atan2(slopeY, slopeX) - Math.PI / 2;
+        double labelOffsetX = labelOffsetMagnitude * Math.cos(angleToMoveLabel);
+        double labelOffsetY = labelOffsetMagnitude * Math.sin(angleToMoveLabel);
+
+        // Move the label position above the arrow
+        double labelX = x + (direction == 0 ? labelOffsetX : -labelOffsetX);
+        double labelY = y + (direction == 0 ? labelOffsetY : -labelOffsetY);
+
+        // Draw the label centered above the arrow
+        FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
+        int labelWidth = metrics.stringWidth(label);
+        g2d.drawString(label, (float)(labelX - labelWidth / 2), (float)(labelY - metrics.getHeight() / 2));
+
+        // Restore the original transform so that it doesn't affect subsequent drawing
+        g2d.setTransform(originalTransform);
+
+    }
 
     //Find xMin, xMax, yMin, yMax
     public List<Double> getExtremes(){
