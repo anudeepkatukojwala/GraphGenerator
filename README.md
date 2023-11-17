@@ -6,4 +6,4 @@ We will also be coming up with ways of generating random planar graphs. Ultimate
 
 
 ## Recent Change
-11/10: Implemented rejection sampling for Ford-Fulkerson algorithm
+11/13: Implemented UI changes for Max Flow output graphs
