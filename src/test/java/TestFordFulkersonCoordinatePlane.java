@@ -615,9 +615,13 @@ class TestFordFulkersonResidualGraphDialog extends JDialog{
                             redForBackward=true;
                         }
                     }
-                    g.drawLine(x1, y1, x2, y2);
+                    int fEdge = rGraph2[currV1][currV2];
+                    if(fEdge>0){
+                        g.drawLine(x1, y1, x2, y2);
 
-                    drawArrow(g, x1, y1, x2, y2, 0, redForForward);
+                        drawArrow(g, x1, y1, x2, y2, 0, redForForward);
+                    }
+
 
                     //Set control
 
@@ -709,13 +713,15 @@ class TestFordFulkersonResidualGraphDialog extends JDialog{
                     int x3 = (int)Math.round(xMid + (20*vX));
                     int y3 = (int)Math.round(yMid + (20*vY));
 
-
-                    //label the edge
-                    int residualCapacity = rGraph2[currV1][currV2];
-                    int capacity = graph[currV1][currV2];
-                    int flow=capacity-residualCapacity;
+                    if(fEdge>0){
+                        //label the edge
+                        int residualCapacity = rGraph2[currV1][currV2];
+                        int capacity = graph[currV1][currV2];
+                        int flow=capacity-residualCapacity;
 //                    System.out.println("Flow/Capacity of this edge: "+flow+"/"+capacity);
-                    g.drawString(residualCapacity+"/"+capacity+"", x3, y3);
+                        g.drawString(residualCapacity+"", x3, y3);
+                    }
+
 
                     //Now draw the direction for the edge
 
