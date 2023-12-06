@@ -6,4 +6,4 @@ We will also be coming up with ways of generating random planar graphs. Ultimate
 
 
 ## Recent Change
-11/13: Implemented spanning tree method from weighted tutte embedding approach to improve graph generation process
+12/05: Implemented spanning tree method from weighted tutte embedding approach to improve graph generation process
