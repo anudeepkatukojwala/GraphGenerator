@@ -6,23 +6,29 @@ import src.main.java.com.graph_generator.graph.TutteEmbedding;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class TestSubDivideMethod extends JFrame {
 
     List<Double> xValues = new ArrayList<>();
     List<Double> yValues =  new ArrayList<>();
     List<String> edg = new ArrayList<>();
+
+    List<Double> beforeTutteXValues;
+    List<Double> beforeTutteYValues;
+    List<String> beforeTutteEdges;
     private JButton uploadButton;
     private JFileChooser fileChooser;
     private static int WIDTH = 600;
     private static int HEIGHT = 600;
+    List<Integer> regionToPin;
+
+    double r=1.0;
 
 
 
@@ -72,7 +78,7 @@ public class TestSubDivideMethod extends JFrame {
                         boolean shouldWeChooseExternalRegion = false;
 
                         List returnOfSubDivide = subDivideObj.testSubDivideMethod(9, shouldWeChooseExternalRegion);
-
+                        System.out.println("Are we here");
                         xValues = (List<Double>) returnOfSubDivide.get(0);
                         yValues = (List<Double>) returnOfSubDivide.get(1);
                         edg = (List<String>) returnOfSubDivide.get(2);
@@ -81,7 +87,11 @@ public class TestSubDivideMethod extends JFrame {
 
                         List<List<Integer>> regionsAfterSubdivide = (List<List<Integer>>) returnOfSubDivide.get(4);
 
+                        System.out.println("Edges size after subdivision: " + edg.size());
+                        System.out.println("Vertices size after subdivision: " + xValues.size());
 
+                        //Draw graph with vertices and edges after subdivision
+                        JDialog dialog4 = new SubDivideNewDialog(TestSubDivideMethod.this, new ArrayList<>(xValues), new ArrayList<>(yValues), new ArrayList<>(edg), 0);
 
                         /****************************************************/
 
@@ -90,7 +100,7 @@ public class TestSubDivideMethod extends JFrame {
 
                         /****************************************************/
                         //Now prepare the graph to input to graphviz
-                        List<Integer> regionToPin=null;
+                        regionToPin=null;
                         if(shouldWeChooseExternalRegion){
                             int largest=-1;
 
@@ -144,25 +154,41 @@ public class TestSubDivideMethod extends JFrame {
                                 currRotationSystem.add((findThisNextVertexInRotationSystem)%currRotationSystem.size(), newIndex);
                             }
                         }
+                        /****************************************************/
+                        edg.clear(); //Important to remember that you are clearing the edges
 
-                        edg.clear();
+                        /****************************************************/
                         for(int i=0;i<rotationSystemAfterSubDivide.size();i++){
                             List<Integer> currRotation = rotationSystemAfterSubDivide.get(i);
                             for(int j:currRotation){
                                 if(i<j){
-                                    edg.add("e "+i+" "+j);
+                                    edg.add("e "+i+" "+j+" "+1);
                                 }
                             }
                         }
 
-                        System.out.println("New edges in the main method: "+edg);
+                        System.out.println("New edges in the main method: "+edg+" \n\n: size: "+edg.size());
+                        System.out.println("Vertices size after main method: "+xValues.size());
 
                         int sizeOfVerticesAfterMakingIt3Connected = xValues.size();
+
+                        beforeTutteXValues = new ArrayList<>(xValues);
+                        beforeTutteYValues = new ArrayList<>(yValues);
+                        beforeTutteEdges = new ArrayList<>(edg);
+
+                        //Draw graph with current vertices and edges before doing Tutte Embedding
+                        JDialog dialog3 = new SubDivideNewDialog(TestSubDivideMethod.this, new ArrayList<>(xValues), new ArrayList<>(yValues), new ArrayList<>(edg), 0);
 
                         /****************************************************/
                         //Change the co-ordinates for Tutte Embedding here
 
-                        TutteEmbedding tutteObj = new TutteEmbedding(xValues, yValues, edg, regionsAfterSubdivide, rotationSystemAfterSubDivide, regionToPin);
+                        TutteEmbedding tutteObj = new TutteEmbedding(new ArrayList<>(xValues), new ArrayList<>(yValues), new ArrayList<>(edg), new ArrayList<>(regionsAfterSubdivide), new ArrayList<>(rotationSystemAfterSubDivide), new ArrayList<>(regionToPin), r);
+                        TestTutteEmbedding obj = new TestTutteEmbedding(new ArrayList<>(xValues), new ArrayList<>(yValues), new ArrayList<>(edg), new ArrayList<>(regionsAfterSubdivide), new ArrayList<>(rotationSystemAfterSubDivide), new ArrayList<>(regionToPin));
+                        List<List<Double>> testNewCoordinates = obj.calculateNewVertexPositions();
+                        List<Double> nXValues = new ArrayList<>(testNewCoordinates.get(0));
+                        List<Double> nYValues = new ArrayList<>(testNewCoordinates.get(1));
+                        List<String> newEdges = new ArrayList<>(edg);
+
                         //Get the new co-ordinates of our vertices in the new graph we got after Tutte Embedding
                         List<List<Double>> newCoordinates = tutteObj.calculateNewVertexPositions();
                         //Update of x and y coordinates of our vertices
@@ -175,6 +201,10 @@ public class TestSubDivideMethod extends JFrame {
 //                        int extraVerticesStartIndex = sizeOfVerticesAfterMakingIt3Connected-originalVerticesSize;
                         xValues = xValues.subList(0, originalVerticesSize);
                         yValues = yValues.subList(0, originalVerticesSize);
+
+                        //New
+                        nXValues = nXValues.subList(0, originalVerticesSize);
+                        nYValues = nYValues.subList(0, originalVerticesSize);
 
                         System.out.println("Edges here after removing the extra vertices: "+edg);
 
@@ -199,13 +229,14 @@ public class TestSubDivideMethod extends JFrame {
 
                         Collections.reverse(edgeIndicesToRemove);
                         for(int index : edgeIndicesToRemove){
-
+                            newEdges.remove(index);
                             edg.remove(index);
                         }
 
                         System.out.println("Final final List of Edges after removing the extra: "+edg);
 
                         /****************************************************/
+
 
 
 
@@ -370,11 +401,62 @@ public class TestSubDivideMethod extends JFrame {
 
 
 
+                        //Save the vertices and edges Tutte Embedding to a file as per the input file
+
 
 
                         //Create a new dialog and send our vertices co-ordinates
                         //and edge list to draw the graph in this new dialog
-                        new SubDivideNewDialog(TestSubDivideMethod.this, xValues, yValues, edg, 0);
+                        SubDivideNewDialog dialog1 = new SubDivideNewDialog(TestSubDivideMethod.this, xValues, yValues, edg, 0);
+                        System.out.println("Are we here");
+                        dialog1.setSize(600, 600);
+                        dialog1.setTitle("Spanning Tree after Tutte Embedding");
+                        dialog1.setVisible(true);
+
+                        JDialog dialog2=new TestSubDivideNewDialog(TestSubDivideMethod.this, nXValues, nYValues, newEdges, 0);
+                        dialog2.setSize(600, 600);
+                        dialog2.setTitle("Original Tutte Embedding");
+                        // Display the dialogs
+                        dialog2.setVisible(true);
+
+                        dialog3.setSize(600, 600);
+                        dialog3.setTitle("Before Tutte Embedding");
+                        dialog3.setVisible(true);
+
+                        dialog4.setSize(600, 600);
+                        dialog4.setTitle("Just after Subdivide method");
+                        dialog4.setVisible(true);
+
+
+                        JDialog sliderDialog = new JDialog(TestSubDivideMethod.this, "Slider", false);
+                        // Scale factor to convert between int and double
+                        final int SCALE = 100;
+
+                        // Creating a slider with a range of 0 to 500 (representing 0.0 to 5.0)
+                        JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 1500, 250);
+                        slider.setMajorTickSpacing(100);
+                        slider.setMinorTickSpacing(10);
+                        slider.setPaintTicks(true);
+                        slider.setPaintLabels(true);
+
+
+                        // Add change listener to the slider
+                        slider.addChangeListener(new ChangeListener() {
+                            @Override
+                            public void stateChanged(ChangeEvent e) {
+                                JSlider source = (JSlider) e.getSource();
+                                if (!source.getValueIsAdjusting()) {
+                                    r = source.getValue() / (double) SCALE;
+                                    getNewTutteCoordinates(r, new ArrayList<>(regionsAfterSubdivide), new ArrayList<>(rotationSystemAfterSubDivide), new ArrayList<>(regionToPin), originalVerticesSize);
+                                    dialog1.updateAndRepaint(xValues, yValues, edg);
+                                }
+                            }
+                        });
+
+                        sliderDialog.add(slider);
+                        sliderDialog.setSize(1500, 100);
+                        sliderDialog.setVisible(true);
+
 
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -395,6 +477,54 @@ public class TestSubDivideMethod extends JFrame {
     public static void main(String[] args) {
         new TestSubDivideMethod();
     }
+    public void getNewTutteCoordinates(double r, List<List<Integer>> regions, List<List<Integer>> rotationSystem, List<Integer> regionToPin, int originalVerticesSize){
+        TutteEmbedding tutteObj = new TutteEmbedding(new ArrayList<>(beforeTutteXValues), new ArrayList<>(beforeTutteYValues), new ArrayList<>(beforeTutteEdges), new ArrayList<>(regions), new ArrayList<>(rotationSystem), new ArrayList<>(regionToPin), r);
+        //Get the new co-ordinates of our vertices in the new graph we got after Tutte Embedding
+        List<List<Double>> newCoordinates = tutteObj.calculateNewVertexPositions();
+        //Update of x and y coordinates of our vertices
+        xValues = newCoordinates.get(0);
+        yValues = newCoordinates.get(1);
+
+        System.out.println("Vertices size after Tutte Embedding: "+xValues.size());
+        System.out.println("Vertices size before Adding Extra vertices: "+originalVerticesSize);
+        //Delete the extra added vertices
+//                        int extraVerticesStartIndex = sizeOfVerticesAfterMakingIt3Connected-originalVerticesSize;
+        xValues = xValues.subList(0, originalVerticesSize);
+        yValues = yValues.subList(0, originalVerticesSize);
+
+        edg = new ArrayList<>(beforeTutteEdges);
+
+        System.out.println("Edges here after removing the extra vertices: "+edg);
+
+        //Delete the edges
+        List<Integer> edgeIndicesToRemove = new ArrayList<>();
+
+        //Get all edges that have at least one endpoint as an extra vertex
+        for(int i=0;i<edg.size();i++){
+            String currEdge = edg.get(i);
+            String[] currEdgeArr = currEdge.split(" ");
+            int v1=Integer.parseInt(currEdgeArr[1]);
+            int v2=Integer.parseInt(currEdgeArr[2]);
+            if(v1>=originalVerticesSize || v2>=originalVerticesSize){
+                edgeIndicesToRemove.add(i);
+            }
+        }
+
+        // Delete extra vertices and edges
+        //The reason we reversed edgeIndicesToRemove is because after removing an edge, the indices of remaining edges change
+        //So we reverse to remove from last to first
+        //Otherwise indices will be incorrect
+
+        Collections.reverse(edgeIndicesToRemove);
+        for(int index : edgeIndicesToRemove){
+
+            edg.remove(index);
+        }
+
+        System.out.println("Final final List of Edges after removing the extra: "+edg);
+
+    }
+
 }
 
 class SubDivideNewDialog extends JDialog{
@@ -408,7 +538,259 @@ class SubDivideNewDialog extends JDialog{
     int originalSizeOfEdg;
 
     public SubDivideNewDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<String> edg, int originalSizeOfEdg) {
-        super(parent, "Graph", true);
+        super(parent, "Graph", false);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setSize(600,600);
+        this.originalSizeOfEdg = originalSizeOfEdg;
+        this.xValues = xValues;
+        this.yValues = yValues;
+        this.edg = edg;
+        createGUI();
+    }
+
+    // Method to update data and repaint
+    public void updateAndRepaint(List<Double> newXValues, List<Double> newYValues, List<String> newEdges) {
+        this.xValues = newXValues;
+        this.yValues = newYValues;
+        this.edg = newEdges;
+        repaint();
+    }
+
+    public void createGUI(){
+
+        Font f1 = new Font(Font.SERIF, Font.BOLD,  10);
+
+
+        drawPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+
+                /***************************************************************/
+                //Dynamic Scaling Code
+                //Set width and height
+                newWidth = drawPanel.getWidth();
+                newHeight = drawPanel.getHeight();
+
+                int minOfWH = Math.min(newHeight, newWidth);
+
+                int W=minOfWH;
+                int H=minOfWH;
+
+                int margin = 40;
+
+                int W1 = W-(2*margin);
+                int H1 = H-(2*margin);
+
+                List<Double> extremes = getExtremes();
+
+                double xMin = extremes.get(0);
+                double xMax = extremes.get(1);
+                double yMin = extremes.get(2);
+                double yMax = extremes.get(3);
+
+                //counter for edge label
+                int edgeCounter = 0;
+
+//                System.out.println("\n\n\n\n\nOriginal Size of Edge: "+originalSizeOfEdg);
+
+                //Draw edges
+                for(int i=0;i<edg.size();i++){
+                    //System.out.println("Edges arr size is: "+edg.size());
+                    String[] edgArr = edg.get(i).split(" ");
+                    int currV1 = Integer.parseInt(edgArr[1]);
+                    int currV2 = Integer.parseInt(edgArr[2]);
+                    //System.out.println("Edge drawn from: "+edgArr[1]+" to "+edgArr[2]);
+                    int x1 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV1)-xMin))/(xMax-xMin)));
+
+
+                    int y1 = (int)Math.round(margin + (double)((H1 * (yMax-yValues.get(currV1)))/(yMax-yMin)));
+
+
+                    int x2 = (int)Math.round(margin +  (double)((W1 * (xValues.get(currV2)-xMin))/(xMax-xMin)));
+                    int y2 = (int)Math.round(margin + (double)((H1 * (yMax-yValues.get(currV2)))/(yMax-yMin)));
+
+                    if(i>=originalSizeOfEdg){
+                        g.setColor(Color.RED);
+                    }
+
+                    g.drawLine(x1, y1, x2, y2);
+
+                    g.setColor(Color.BLACK);
+
+                    int xMid = (int)Math.round((double)(x1+x2)/2);
+                    int yMid = (int)Math.round((double)(y1+y2)/2);
+
+                    int deltaX = Math.abs(x2-x1);
+                    int deltaY = Math.abs(y2-y1);
+
+                    double n = Math.sqrt(Math.pow(deltaX, 2)+Math.pow(deltaY, 2));
+                    //System.out.println("n value: "+ n);
+
+                    //Below code is to make sure all edge labels are drawn perpendicular
+                    //to their edges
+                    double dummyX1 = xValues.get(currV1);
+                    double dummyY1 = yValues.get(currV1);
+                    double dummyX2 = xValues.get(currV2);
+                    double dummyY2 = yValues.get(currV2);
+
+                    //move one vertex to (0,0) coordinate and find the angle of the
+                    //other vertex using atan2 function
+                    double newX = (dummyX1+(-dummyX2));
+                    double newY = (dummyY1+(-dummyY2));
+                    int sign=0;
+                    double angle = Math.toDegrees(Math.atan2(newY, newX));
+                    //if angle is obtuse then flip the sign of vX and vY values
+                    if((angle>90 && angle <180) || (angle<0 && angle>-90)){
+                        sign=1;
+                    }
+                    double vX=0;
+                    double vY=0;
+
+                    if(sign==0){
+                        vX = -(double)(deltaY/n);
+                        vY = -(double)(deltaX/n);
+                    }
+                    else{
+                        vX = (double)(deltaY/n);
+                        vY = -(double)(deltaX/n);
+                    }
+
+
+                    int x3 = (int)Math.round(xMid + (15*vX));
+                    int y3 = (int)Math.round(yMid + (15*vY));
+
+
+                    //label the edge
+                    g.drawString(Character.toString(97+edgeCounter), x3, y3);
+                    //g.drawLine(xMid, yMid, x3, y3);
+                    edgeCounter++;
+
+                }
+
+                //Label vertices
+                List<List<Integer>> lt = getPixelValues(xValues, yValues, minOfWH);
+
+                int labelCounter=0;
+
+                for(List<Integer> curr:lt){
+                    int x=curr.get(0);
+                    int y=curr.get(1);
+                    g.setColor(Color.WHITE);
+                    g.fillOval(x-(10), y-(10), 20*(int)Math.sqrt(2), 20*(int)Math.sqrt(2));
+                    g.setColor(Color.BLACK);
+                    g.drawOval(x-(10), y-(10), 20*(int)Math.sqrt(2), 20*(int)Math.sqrt(2));
+
+                    //g.setColor(Color.RED);
+                    g.setFont(f1);
+                    g.drawString(String.valueOf(labelCounter), x-2, y+3);
+                    labelCounter++;
+                    g.setFont(null);
+                    //g.setColor(Color.BLACK);
+
+                }
+            }
+        };
+        //System.out.println("Adjacency List: "+getAdjacencyListOfGraph(xValues, yValues, edg));
+//        src.main.java.com.graphgenerator.graph.GraphOperations obj = new src.main.java.com.graphgenerator.graph.GraphOperations(xValues, yValues, edg);
+//        //obj.getAdjacencyListOfGraph();
+//        obj.getObjectsOfAdjacencyList();
+//        obj.getRegions();
+        //obj.getRotationSystem();
+        //System.out.println("Regions are: "+obj.getRegions());
+        drawPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        drawPanel.setBackground(Color.WHITE);
+        add(drawPanel);
+        setVisible(true);
+        pack();
+    }
+
+
+    //Find xMin, xMax, yMin, yMax
+    public List<Double> getExtremes(){
+        List<Double> lt = new ArrayList<>();
+
+        //Find extremes in x values
+        double xMin = Double.MAX_VALUE;
+        double xMax = Double.MIN_VALUE;
+
+        for(double curr:xValues){
+            if(curr<xMin){
+                xMin=curr;
+            }
+            if(curr>xMax){
+                xMax=curr;
+            }
+        }
+        lt.add(xMin);
+        lt.add(xMax);
+
+        //Find extremes in y values
+        double yMin = Double.MAX_VALUE;
+        double yMax = Double.MIN_VALUE;
+
+        for(double curr:yValues){
+            if(curr<yMin){
+                yMin=curr;
+            }
+            if(curr>yMax){
+                yMax=curr;
+            }
+        }
+        lt.add(yMin);
+        lt.add(yMax);
+
+        return lt;
+
+    }
+
+    //Get pixel values for the given vertices as coordinates
+    public List<List<Integer>> getPixelValues(List<Double> xValues, List<Double> yValues, int minOfWH){
+        List<List<Integer>> lt = new ArrayList<>();
+
+        int W=minOfWH;
+        int H=minOfWH;
+
+        int margin = 40;
+
+        int W1 = W-(2*margin);
+        int H1 = H-(2*margin);
+
+        List<Double> extremes = getExtremes();
+        //System.out.println("Extremes are: "+extremes);
+        double xMin = extremes.get(0);
+        double xMax = extremes.get(1);
+        double yMin = extremes.get(2);
+        double yMax = extremes.get(3);
+
+        for(int i=0;i<xValues.size();i++){
+            int x = (int)Math.round(margin +  (double)((W1 * (xValues.get(i)-xMin))/(xMax-xMin)));
+            int y = (int)Math.round(margin + (double)((H1 * (yMax-yValues.get(i)))/(yMax-yMin)));
+            lt.add(new ArrayList<>());
+            lt.get(i).add(x);
+            lt.get(i).add(y);
+        }
+
+        return lt;
+    }
+
+
+
+
+}
+
+class TestSubDivideNewDialog extends JDialog{
+    private JPanel drawPanel;
+    private int newWidth = 600;
+    private int newHeight = 600;
+
+    List<Double> xValues;
+    List<Double> yValues;
+    List<String> edg = new ArrayList<>();
+    int originalSizeOfEdg;
+
+    public TestSubDivideNewDialog(JFrame parent, List<Double> xValues, List<Double> yValues, List<String> edg, int originalSizeOfEdg) {
+        super(parent, "Test SubDivide", false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(600,600);
         this.originalSizeOfEdg = originalSizeOfEdg;
