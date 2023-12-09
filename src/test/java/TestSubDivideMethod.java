@@ -77,7 +77,7 @@ public class TestSubDivideMethod extends JFrame {
                         //Parameter for testSubDivideMethod
                         boolean shouldWeChooseExternalRegion = false;
 
-                        List returnOfSubDivide = subDivideObj.testSubDivideMethod(9, shouldWeChooseExternalRegion);
+                        List returnOfSubDivide = subDivideObj.testSubDivideMethod(17, shouldWeChooseExternalRegion);
                         System.out.println("Are we here");
                         xValues = (List<Double>) returnOfSubDivide.get(0);
                         yValues = (List<Double>) returnOfSubDivide.get(1);
@@ -433,7 +433,7 @@ public class TestSubDivideMethod extends JFrame {
                         final int SCALE = 100;
 
                         // Creating a slider with a range of 0 to 500 (representing 0.0 to 5.0)
-                        JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 1500, 250);
+                        JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 1500, 100);
                         slider.setMajorTickSpacing(100);
                         slider.setMinorTickSpacing(10);
                         slider.setPaintTicks(true);
